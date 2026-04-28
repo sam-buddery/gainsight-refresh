@@ -183,6 +183,163 @@
   }
   .topbar-right .divider { width: 1px; height: 20px; background: var(--line); margin: 0 6px; }
 
+  /* ===== MODE SWITCHER (Operations <-> CSM Focus) ===== */
+  .mode-switch {
+    position: relative;
+    user-select: none;
+  }
+  .mode-trigger {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 32px;
+    padding: 0 10px 0 12px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    box-shadow: var(--shadow-sm);
+  }
+  .mode-trigger:hover { border-color: var(--text-3); }
+  .mode-trigger .mode-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text);
+  }
+  body.mode-csm .mode-trigger .mode-dot { background: var(--lime); box-shadow: 0 0 6px var(--lime); }
+  .mode-trigger .mode-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-right: 2px;
+  }
+  .mode-trigger .mode-name { font-weight: 600; }
+  .mode-trigger .chev {
+    width: 12px; height: 12px;
+    color: var(--text-2);
+    transition: transform 0.15s;
+  }
+  .mode-switch.is-open .chev { transform: rotate(180deg); }
+
+  .mode-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 280px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow-lg);
+    padding: 4px;
+    z-index: 50;
+    opacity: 0; transform: translateY(-4px);
+    pointer-events: none;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .mode-switch.is-open .mode-menu {
+    opacity: 1; transform: translateY(0);
+    pointer-events: auto;
+  }
+  .mode-option {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    align-items: start;
+    gap: 10px;
+    padding: 10px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .mode-option:hover { background: var(--bg-2); }
+  .mode-option-icon {
+    width: 18px; height: 18px;
+    color: var(--text-1);
+    margin-top: 1px;
+  }
+  .mode-option-icon svg { width: 18px; height: 18px; }
+  .mode-option-name {
+    font-size: 13px; font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .mode-option-desc {
+    font-size: 11px;
+    color: var(--text-2);
+    margin-top: 2px;
+    line-height: 1.35;
+  }
+  .mode-option-check {
+    width: 14px; height: 14px;
+    color: var(--text);
+    opacity: 0; margin-top: 2px;
+  }
+  .mode-option.is-active .mode-option-check { opacity: 1; }
+  .mode-option.is-active { background: var(--bg-2); }
+  body.mode-csm .mode-option[data-mode="ops"] .mode-option-check { opacity: 0; }
+  body.mode-csm .mode-option[data-mode="ops"] { background: transparent; }
+  body.mode-csm .mode-option[data-mode="csm"] .mode-option-check { opacity: 1; }
+  body.mode-csm .mode-option[data-mode="csm"] { background: var(--bg-2); }
+  body:not(.mode-csm) .mode-option[data-mode="csm"] .mode-option-check { opacity: 0; }
+  body:not(.mode-csm) .mode-option[data-mode="csm"] { background: transparent; }
+  body:not(.mode-csm) .mode-option[data-mode="ops"] .mode-option-check { opacity: 1; }
+  body:not(.mode-csm) .mode-option[data-mode="ops"] { background: var(--bg-2); }
+
+  /* ===== CSM FOCUS MODE OVERRIDES =====
+     The toggle doesn't just restyle — it re-composes the page for a CSM's day.
+     Hide leadership/manager panels, re-flow the grid, expand 'Today'. */
+  body.mode-csm .kpis,
+  body.mode-csm .panel-renewal-forecast,
+  body.mode-csm .panel-health-mix,
+  body.mode-csm .panel-team-pulse {
+    display: none !important;
+  }
+  body.mode-csm .canvas {
+    grid-template-columns: 320px 1fr 360px;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "hello hello hello"
+      "left center right";
+  }
+  /* Hide some columns of the dense portfolio table to simplify it */
+  body.mode-csm .cs-table thead th.col-trend,
+  body.mode-csm .cs-table tbody td.col-trend,
+  body.mode-csm .cs-table thead th.col-segment,
+  body.mode-csm .cs-table tbody td.col-segment,
+  body.mode-csm .cs-table thead th.col-csm,
+  body.mode-csm .cs-table tbody td.col-csm {
+    display: none;
+  }
+  /* Two greetings — one per mode */
+  .hello-greeting-ops { display: none; }
+  .hello-greeting-csm { display: block; }
+  body:not(.mode-csm) .hello-greeting-ops { display: block; }
+  body:not(.mode-csm) .hello-greeting-csm { display: none; }
+  /* CSM-specific hello-meta */
+  .hello-meta-csm { display: none; }
+  body.mode-csm .hello-meta-ops { display: none; }
+  body.mode-csm .hello-meta-csm { display: flex; gap: 18px; align-items: center; font-family: var(--font-mono); font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; }
+  body.mode-csm .hello-meta-csm .val { color: var(--text); }
+  body.mode-csm .hello-meta-csm .alert { color: var(--red); font-weight: 600; }
+
+  /* Tabs — only show 'My Portfolio' in CSM mode */
+  body.mode-csm .tab-watchlist,
+  body.mode-csm .tab-expansion,
+  body.mode-csm .tab-onboarding {
+    display: none;
+  }
+
+  /* In CSM mode, the 'Today' panel is the hero — give it more room */
+  body.mode-csm .panel-today { flex: 1; }
+
+  /* Tasks I owe — only visible in CSM mode */
+  .panel-my-tasks { display: none; }
+  body.mode-csm .panel-my-tasks { display: flex; }
+
+  /* Soften canvas re-flow */
+  .canvas { transition: grid-template-columns 0.3s ease; }
+
   .canvas {
     overflow: auto;
     padding: 18px;
@@ -1028,13 +1185,45 @@
 
   <main class="main">
     <header class="topbar">
-      <div class="crumbs">
-        <span>Operations</span>
-        <span class="sep">/</span>
-        <span>Home</span>
-        <span class="sep">·</span>
-        <span class="live"><span class="live-dot"></span>Live</span>
-        <span class="mcp-pill">⚡ MCP · Gainsight</span>
+      <div style="display: flex; align-items: center; gap: 14px; min-width: 0;">
+        <div class="crumbs">
+          <span>Operations</span>
+          <span class="sep">/</span>
+          <span>Home</span>
+          <span class="sep">·</span>
+          <span class="live"><span class="live-dot"></span>Live</span>
+          <span class="mcp-pill">⚡ MCP · Gainsight</span>
+        </div>
+        <div class="mode-switch" id="modeSwitch">
+          <button class="mode-trigger" id="modeTrigger" aria-haspopup="true" aria-expanded="false">
+            <span class="mode-dot"></span>
+            <span class="mode-label">View</span>
+            <span class="mode-name" id="modeName">Operations</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="mode-menu" role="menu">
+            <div class="mode-option" data-mode="ops" role="menuitem">
+              <span class="mode-option-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+              </span>
+              <div>
+                <div class="mode-option-name">Operations</div>
+                <div class="mode-option-desc">Full leadership view — book ARR, NRR, health mix, forecast.</div>
+              </div>
+              <svg class="mode-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <div class="mode-option" data-mode="csm" role="menuitem">
+              <span class="mode-option-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>
+              </span>
+              <div>
+                <div class="mode-option-name">CSM Focus</div>
+                <div class="mode-option-desc">Just my book — today's plays, my accounts, what I owe.</div>
+              </div>
+              <svg class="mode-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="cmd">
         <svg class="ai-spark" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.5 5L19 8.5 13.5 10 12 15l-1.5-5L5 8.5 10.5 7z M19 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"/></svg>
@@ -1061,12 +1250,18 @@
 
       <section class="hello">
         <div>
-          <div class="hello-greeting">Good morning, Sam — <em>3 customers</em> need you today.</div>
+          <div class="hello-greeting hello-greeting-ops">Good morning, Sam — <em>3 customers</em> need you today.</div>
+          <div class="hello-greeting hello-greeting-csm">Good morning, Sam — <em>3 customers</em> need you today.</div>
         </div>
-        <div class="hello-meta">
+        <div class="hello-meta hello-meta-ops">
           <span>Tue · 28 Apr 2026 · <span class="val">Wk 18</span></span>
           <span>Book: <span class="val">$18.78M ARR</span></span>
           <span>181 accounts · <span class="val">5 CSMs</span></span>
+        </div>
+        <div class="hello-meta hello-meta-csm">
+          <span>Tue · 28 Apr 2026</span>
+          <span>My book: <span class="val">12 accts · $5.4M</span></span>
+          <span><span class="alert">3 overdue</span> · 7 due this week</span>
         </div>
       </section>
 
@@ -1415,12 +1610,12 @@ Sam</div>
                 <tr>
                   <th style="width: 26%;">Account</th>
                   <th>Health</th>
-                  <th>30d</th>
+                  <th class="col-trend">30d</th>
                   <th>Stage</th>
-                  <th>Segment</th>
+                  <th class="col-segment">Segment</th>
                   <th style="text-align:right;">ARR</th>
                   <th>Renewal</th>
-                  <th>CSM</th>
+                  <th class="col-csm">CSM</th>
                   <th style="width: 22%;">AI Insight</th>
                   <th style="text-align:right;"></th>
                 </tr>
@@ -1431,12 +1626,12 @@ Sam</div>
                 <tr class="row-risk">
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#a435f0,#5022c3);">U</div><div><div class="co-name">Udemy</div><div class="co-sub">acct · 33 users · Skilled Nursing</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#d97706" stroke-dasharray="56.5" stroke-dashoffset="17.5"/></svg></div><span style="color:var(--amber);">69</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>Renewal</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$2.33M<div class="sub">$194K MRR</div></td>
                   <td class="renewal-cell">03 May 25<div class="days urgent">past · 360d</div></td>
-                  <td><span class="seg">S. McField</span></td>
+                  <td class="col-csm"><span class="seg">S. McField</span></td>
                   <td><div class="ai-insight"><span class="spark" style="color:var(--red)">●</span><span>CSAT 35 · NPS 0 · escalate immediately</span></div></td>
                   <td class="action-cell"><div class="mini-btn" style="border-color:var(--red); color:var(--red); background:var(--red-soft);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1445,12 +1640,12 @@ Sam</div>
                 <tr class="row-risk">
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#cd040b,#8b0000);">V</div><div><div class="co-name">Verizon</div><div class="co-sub">acct · 126 users · Education</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#dc2626" stroke-dasharray="56.5" stroke-dashoffset="29.95"/></svg></div><span style="color:var(--red);">47</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--green)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,12 L10,11 L20,9 L30,7 L40,5 L50,4 L60,3" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>+37</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--green)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,12 L10,11 L20,9 L30,7 L40,5 L50,4 L60,3" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>+37</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>Implement</div></td>
-                  <td><span class="seg">Enterprise</span></td>
+                  <td class="col-segment"><span class="seg">Enterprise</span></td>
                   <td class="arr-cell">$1.56M<div class="sub">$130K MRR</div></td>
                   <td class="renewal-cell">30 Aug 25<div class="days urgent">past · 241d</div></td>
-                  <td><span class="seg">S. McField</span></td>
+                  <td class="col-csm"><span class="seg">S. McField</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>Recovering from 10 · keep pressure on impl</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1459,12 +1654,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#4285f4,#34a853);">A</div><div><div class="co-name">Alphabet Inc.</div><div class="co-sub">acct · 400 users · Media</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#16a34a" stroke-dasharray="56.5" stroke-dashoffset="16.4"/></svg></div><span style="color:var(--green);">71</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>Expansion</div></td>
-                  <td><span class="seg">Enterprise</span></td>
+                  <td class="col-segment"><span class="seg">Enterprise</span></td>
                   <td class="arr-cell">$600K<div class="sub">+$150K opp</div></td>
                   <td class="renewal-cell">08 Jul 26<div class="days">in 71d</div></td>
-                  <td><span class="seg">S. McField</span></td>
+                  <td class="col-csm"><span class="seg">S. McField</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>NPS 100 · CSAT 100 · reference fit</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1473,12 +1668,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#0891b2,#0e7490);">Ab</div><div><div class="co-name">Abbett</div><div class="co-sub">acct · 137 users · Technology</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#16a34a" stroke-dasharray="56.5" stroke-dashoffset="14.7"/></svg></div><span style="color:var(--green);">74</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>Renewal</div></td>
-                  <td><span class="seg">Enterprise</span></td>
+                  <td class="col-segment"><span class="seg">Enterprise</span></td>
                   <td class="arr-cell">$275K<div class="sub">+$60K opp</div></td>
                   <td class="renewal-cell">18 Jun 26<div class="days">in 51d</div></td>
-                  <td><span class="seg">S. McField</span></td>
+                  <td class="col-csm"><span class="seg">S. McField</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>CSAT 80 · ready for Advanced Analytics</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1487,12 +1682,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#fdb515,#dc8500);">S</div><div><div class="co-name">Symantec</div><div class="co-sub">acct · 576 users · Finance</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#d97706" stroke-dasharray="56.5" stroke-dashoffset="22.6"/></svg></div><span style="color:var(--amber);">60</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>Adopting</div></td>
-                  <td><span class="seg">SMB</span></td>
+                  <td class="col-segment"><span class="seg">SMB</span></td>
                   <td class="arr-cell">$246K<div class="sub">$20.5K MRR</div></td>
                   <td class="renewal-cell">25 Jun 26<div class="days">in 58d</div></td>
-                  <td><span class="seg">K. Bennett</span></td>
+                  <td class="col-csm"><span class="seg">K. Bennett</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>NPS 0 · low engagement · QBR overdue</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1501,12 +1696,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#003a70,#001f3d);">IM</div><div><div class="co-name">Ingram Micro</div><div class="co-sub">acct · Technology</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#d97706" stroke-dasharray="56.5" stroke-dashoffset="23.7"/></svg></div><span style="color:var(--amber);">58</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span></span><span></span><span></span><span></span></div>New</div></td>
-                  <td><span class="seg">Enterprise</span></td>
+                  <td class="col-segment"><span class="seg">Enterprise</span></td>
                   <td class="arr-cell">$242K<div class="sub">annual</div></td>
                   <td class="renewal-cell">18 Jul 25<div class="days urgent">past · 284d</div></td>
-                  <td><span class="seg">L. Jones</span></td>
+                  <td class="col-csm"><span class="seg">L. Jones</span></td>
                   <td><div class="ai-insight"><span class="spark" style="color:var(--red)">●</span><span>CSAT 26 · onboarding stalled</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1515,12 +1710,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#ef4444,#b91c1c);">RF</div><div><div class="co-name">Rocket Fuel</div><div class="co-sub">acct · 85 users · Government</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#16a34a" stroke-dasharray="56.5" stroke-dashoffset="14.1"/></svg></div><span style="color:var(--green);">75</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>Implement</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$210K<div class="sub">$17.5K MRR</div></td>
                   <td class="renewal-cell">04 Sep 27<div class="days safe">in 494d</div></td>
-                  <td><span class="seg">S. McField</span></td>
+                  <td class="col-csm"><span class="seg">S. McField</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>NPS −100 anomaly · investigate</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1529,12 +1724,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#000,#1a1a1a);">X</div><div><div class="co-name">X (Twitter)</div><div class="co-sub">acct · Enterprise</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#d97706" stroke-dasharray="56.5" stroke-dashoffset="23.7"/></svg></div><span style="color:var(--amber);">58</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span></span><span></span><span></span><span></span></div>New</div></td>
-                  <td><span class="seg">Enterprise</span></td>
+                  <td class="col-segment"><span class="seg">Enterprise</span></td>
                   <td class="arr-cell">$210K<div class="sub">annual</div></td>
                   <td class="renewal-cell">25 Oct 24<div class="days urgent">past · 550d</div></td>
-                  <td><span class="seg">A. Garcia</span></td>
+                  <td class="col-csm"><span class="seg">A. Garcia</span></td>
                   <td><div class="ai-insight"><span class="spark" style="color:var(--red)">●</span><span>Renewal 550d overdue · escalate exec</span></div></td>
                   <td class="action-cell"><div class="mini-btn" style="border-color:var(--red); color:var(--red); background:var(--red-soft);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1543,12 +1738,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#fcb800,#d4a000);">RS</div><div><div class="co-name">Rosetta Stone</div><div class="co-sub">acct · 45 users</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#d97706" stroke-dasharray="56.5" stroke-dashoffset="20.3"/></svg></div><span style="color:var(--amber);">64</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>Expansion</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$205K<div class="sub">$17.1K MRR</div></td>
                   <td class="renewal-cell">21 Aug 25<div class="days urgent">past · 250d</div></td>
-                  <td><span class="seg">S. McField</span></td>
+                  <td class="col-csm"><span class="seg">S. McField</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>NPS 100 · expansion path open</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1557,12 +1752,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#0066cc,#003d7a);">BS</div><div><div class="co-name">BlueShield</div><div class="co-sub">acct · 150 users · Energy</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#d97706" stroke-dasharray="56.5" stroke-dashoffset="18.6"/></svg></div><span style="color:var(--amber);">67</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>Expansion</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$195K<div class="sub">$16.3K MRR</div></td>
                   <td class="renewal-cell">24 Apr 24<div class="days urgent">past · 2y</div></td>
-                  <td><span class="seg">S. McField</span></td>
+                  <td class="col-csm"><span class="seg">S. McField</span></td>
                   <td><div class="ai-insight"><span class="spark" style="color:var(--red)">●</span><span>2y past renewal · contract gap risk</span></div></td>
                   <td class="action-cell"><div class="mini-btn" style="border-color:var(--red); color:var(--red); background:var(--red-soft);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1571,12 +1766,12 @@ Sam</div>
                 <tr class="row-risk">
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#1e88e5,#1565c0);">DT</div><div><div class="co-name">Dealertrack Tech.</div><div class="co-sub">acct · 40 users · Machinery</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#dc2626" stroke-dasharray="56.5" stroke-dashoffset="31.1"/></svg></div><span style="color:var(--red);">45</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>Implement</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$190K<div class="sub" style="color:var(--red)">at risk</div></td>
                   <td class="renewal-cell">28 Apr 27<div class="days safe">in 365d</div></td>
-                  <td><span class="seg">A. Garcia</span></td>
+                  <td class="col-csm"><span class="seg">A. Garcia</span></td>
                   <td><div class="ai-insight"><span class="spark" style="color:var(--red)">●</span><span>Renewal CTA · health Red · due Apr 13</span></div></td>
                   <td class="action-cell"><div class="mini-btn" style="border-color:var(--red); color:var(--red); background:var(--red-soft);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1585,12 +1780,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#da3743,#a0282f);">OT</div><div><div class="co-name">OpenTable</div><div class="co-sub">acct · 95 users · Finance</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#d97706" stroke-dasharray="56.5" stroke-dashoffset="19.2"/></svg></div><span style="color:var(--amber);">66</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>Implement</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$180K<div class="sub">$15K MRR</div></td>
                   <td class="renewal-cell">23 Feb 25<div class="days urgent">past · 64d</div></td>
-                  <td><span class="seg">K. Bennett</span></td>
+                  <td class="col-csm"><span class="seg">K. Bennett</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>Healthy NPS · stuck in implementation</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1599,12 +1794,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#10b981,#059669);">23</div><div><div class="co-name">23andme</div><div class="co-sub">acct · 99 users · Chemicals</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#d97706" stroke-dasharray="56.5" stroke-dashoffset="17"/></svg></div><span style="color:var(--amber);">70</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>Adopting</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$159K<div class="sub">$13.2K MRR</div></td>
                   <td class="renewal-cell">29 May 25<div class="days urgent">past · 335d</div></td>
-                  <td><span class="seg">S. McField</span></td>
+                  <td class="col-csm"><span class="seg">S. McField</span></td>
                   <td><div class="ai-insight"><span class="spark" style="color:var(--red)">●</span><span>NPS −100 · CSAT 54.5 · sentiment risk</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1613,12 +1808,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#7c2d12,#451a03);">AH</div><div><div class="co-name">Athenahealth</div><div class="co-sub">acct · 83 users · Non-profit</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#d97706" stroke-dasharray="56.5" stroke-dashoffset="18.6"/></svg></div><span style="color:var(--amber);">67</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>Implement</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$175K<div class="sub">$14.6K MRR</div></td>
                   <td class="renewal-cell">12 Nov 23<div class="days urgent">past · 2.5y</div></td>
-                  <td><span class="seg">L. Jones</span></td>
+                  <td class="col-csm"><span class="seg">L. Jones</span></td>
                   <td><div class="ai-insight"><span class="spark" style="color:var(--red)">●</span><span>Severe contract gap · audit & re-paper</span></div></td>
                   <td class="action-cell"><div class="mini-btn" style="border-color:var(--red); color:var(--red); background:var(--red-soft);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1627,12 +1822,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#dc2626,#7f1d1d);">Sh</div><div><div class="co-name">Sharp</div><div class="co-sub">acct · 135 users · Media</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#16a34a" stroke-dasharray="56.5" stroke-dashoffset="14.7"/></svg></div><span style="color:var(--green);">74</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span></span><span></span><span></span><span></span></div>New</div></td>
-                  <td><span class="seg">Enterprise</span></td>
+                  <td class="col-segment"><span class="seg">Enterprise</span></td>
                   <td class="arr-cell">$170K<div class="sub">+$25K opp</div></td>
                   <td class="renewal-cell">16 Jan 25<div class="days urgent">past · 102d</div></td>
-                  <td><span class="seg">K. Bennett</span></td>
+                  <td class="col-csm"><span class="seg">K. Bennett</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>NPS 35 · CSAT 65 · stable adopter</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1641,12 +1836,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#6001d2,#3a008c);">Y!</div><div><div class="co-name">Yahoo</div><div class="co-sub">acct · 105 users · Construction</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#16a34a" stroke-dasharray="56.5" stroke-dashoffset="15.8"/></svg></div><span style="color:var(--green);">72</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>Implement</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$166K<div class="sub">$13.8K MRR</div></td>
                   <td class="renewal-cell">12 Nov 24<div class="days urgent">past · 532d</div></td>
-                  <td><span class="seg">A. Garcia</span></td>
+                  <td class="col-csm"><span class="seg">A. Garcia</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>NPS 100 · advocate · expansion candidate</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1655,12 +1850,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#ff7700,#cc5500);">Av</div><div><div class="co-name">Avnet</div><div class="co-sub">acct · 14 users · Service</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#16a34a" stroke-dasharray="56.5" stroke-dashoffset="13"/></svg></div><span style="color:var(--green);">77</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>Implement</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$161K<div class="sub">$13.4K MRR</div></td>
                   <td class="renewal-cell">17 Jun 25<div class="days urgent">past · 315d</div></td>
-                  <td><span class="seg">L. Jones</span></td>
+                  <td class="col-csm"><span class="seg">L. Jones</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>Strong fundamentals · low user count</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1669,12 +1864,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#005eb8,#003d7a);">Gi</div><div><div class="co-name">Gilead Sciences</div><div class="co-sub">acct · 123 users · Electronics</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#d97706" stroke-dasharray="56.5" stroke-dashoffset="19.8"/></svg></div><span style="color:var(--amber);">65</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>Renewal</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$156K<div class="sub">$13K MRR</div></td>
                   <td class="renewal-cell">15 Jul 26<div class="days">in 78d</div></td>
-                  <td><span class="seg">L. Jones</span></td>
+                  <td class="col-csm"><span class="seg">L. Jones</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>Quote sent · awaiting signature</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1683,12 +1878,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#005faf,#003d7a);">Ti</div><div><div class="co-name">TIBCO</div><div class="co-sub">acct · 112 users · Government</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#d97706" stroke-dasharray="56.5" stroke-dashoffset="19.8"/></svg></div><span style="color:var(--amber);">65</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>Implement</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$151K<div class="sub">$12.6K MRR</div></td>
                   <td class="renewal-cell">14 Nov 24<div class="days urgent">past · 530d</div></td>
-                  <td><span class="seg">P. Miller</span></td>
+                  <td class="col-csm"><span class="seg">P. Miller</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>Renewal CTA · due Apr 13 · this week</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1697,12 +1892,12 @@ Sam</div>
                 <tr class="row-risk">
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#84bd00,#558b00);">Cr</div><div><div class="co-name">Cree</div><div class="co-sub">acct · 123 users · Education</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#dc2626" stroke-dasharray="56.5" stroke-dashoffset="31.1"/></svg></div><span style="color:var(--red);">45</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>Implement</div></td>
-                  <td><span class="seg">Mid-Market</span></td>
+                  <td class="col-segment"><span class="seg">Mid-Market</span></td>
                   <td class="arr-cell">$150K<div class="sub" style="color:var(--red)">at risk</div></td>
                   <td class="renewal-cell">21 Oct 23<div class="days urgent">past · 2.5y</div></td>
-                  <td><span class="seg">A. Garcia</span></td>
+                  <td class="col-csm"><span class="seg">A. Garcia</span></td>
                   <td><div class="ai-insight"><span class="spark" style="color:var(--red)">●</span><span>Health 45 · stuck in implement · escalate</span></div></td>
                   <td class="action-cell"><div class="mini-btn" style="border-color:var(--red); color:var(--red); background:var(--red-soft);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1711,12 +1906,12 @@ Sam</div>
                 <tr>
                   <td><div class="co-cell"><div class="co-logo" style="background:linear-gradient(135deg,#009964,#006b46);">DV</div><div><div class="co-name">DATEV</div><div class="co-sub">acct · 60 users · Chemicals</div></div></div></td>
                   <td><div class="health-pill"><div class="health-ring"><svg width="22" height="22" viewBox="0 0 22 22"><circle class="bg-c" cx="11" cy="11" r="9"/><circle cx="11" cy="11" r="9" stroke="#d97706" stroke-dasharray="56.5" stroke-dashoffset="23.7"/></svg></div><span style="color:var(--amber);">58</span></div></td>
-                  <td><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
+                  <td class="col-trend"><div class="trend-mini" style="color:var(--text-2)"><svg viewBox="0 0 60 14" preserveAspectRatio="none" width="60"><path d="M0,7 L10,7 L20,7 L30,7 L40,7 L50,7 L60,7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>0</div></td>
                   <td><div class="stage"><div class="stage-pip"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>Adopting</div></td>
-                  <td><span class="seg">SMB</span></td>
+                  <td class="col-segment"><span class="seg">SMB</span></td>
                   <td class="arr-cell">$150K<div class="sub">$12.5K MRR</div></td>
                   <td class="renewal-cell">13 Jul 25<div class="days urgent">past · 289d</div></td>
-                  <td><span class="seg">A. Garcia</span></td>
+                  <td class="col-csm"><span class="seg">A. Garcia</span></td>
                   <td><div class="ai-insight"><span class="spark">✦</span><span>NPS 100 · low health flag · re-engage</span></div></td>
                   <td class="action-cell"><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="mini-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></td>
                 </tr>
@@ -1729,7 +1924,7 @@ Sam</div>
 
       <!-- RIGHT COLUMN -->
       <aside class="right">
-        <div class="panel">
+        <div class="panel panel-today">
           <div class="panel-head">
             <div class="panel-title">Today <span class="count">5</span></div>
             <div class="panel-actions">
@@ -1781,8 +1976,76 @@ Sam</div>
           </div>
         </div>
 
+        <!-- WHAT I OWE — CSM mode only — driven by overdue CTA tasks owned by Sam -->
+        <div class="panel panel-my-tasks" style="flex-direction: column;">
+          <div class="panel-head">
+            <div class="panel-title">What I owe <span class="count" style="color: var(--red); border-color: rgba(220,38,38,0.3); background: var(--red-soft);">3 overdue</span></div>
+            <div class="panel-actions">
+              <div class="ico-btn" title="Filter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg></div>
+            </div>
+          </div>
+          <div class="today-list">
+            <div class="today-row" style="grid-template-columns: 4px 1fr auto;">
+              <div style="width: 3px; background: var(--red); border-radius: 2px; align-self: stretch;"></div>
+              <div class="today-info">
+                <div class="today-title">Send renewal email — Abbett</div>
+                <div class="today-co">Marie Forshaw · Renewal CTA · drafted, not sent</div>
+              </div>
+              <span class="today-tag risk">5d late</span>
+            </div>
+            <div class="today-row" style="grid-template-columns: 4px 1fr auto;">
+              <div style="width: 3px; background: var(--red); border-radius: 2px; align-self: stretch;"></div>
+              <div class="today-info">
+                <div class="today-title">Follow-up call — 23andme</div>
+                <div class="today-co">NPS detractor · response promised Apr 21</div>
+              </div>
+              <span class="today-tag risk">7d late</span>
+            </div>
+            <div class="today-row" style="grid-template-columns: 4px 1fr auto;">
+              <div style="width: 3px; background: var(--red); border-radius: 2px; align-self: stretch;"></div>
+              <div class="today-info">
+                <div class="today-title">Close out CTA — Slack support backlog</div>
+                <div class="today-co">Tickets resolved · CTA still open</div>
+              </div>
+              <span class="today-tag risk">3d late</span>
+            </div>
+            <div class="today-row" style="grid-template-columns: 4px 1fr auto;">
+              <div style="width: 3px; background: var(--amber); border-radius: 2px; align-self: stretch;"></div>
+              <div class="today-info">
+                <div class="today-title">Sentiment task — Abbett</div>
+                <div class="today-co">AI Sentiment Drop CTA · due tomorrow</div>
+              </div>
+              <span class="today-tag" style="background: var(--amber-soft); color: var(--amber);">Tmrw</span>
+            </div>
+            <div class="today-row" style="grid-template-columns: 4px 1fr auto;">
+              <div style="width: 3px; background: var(--amber); border-radius: 2px; align-self: stretch;"></div>
+              <div class="today-info">
+                <div class="today-title">Health drop — Green Flame</div>
+                <div class="today-co">Drop in Health CTA · check-in due Apr 28</div>
+              </div>
+              <span class="today-tag" style="background: var(--amber-soft); color: var(--amber);">Today</span>
+            </div>
+            <div class="today-row" style="grid-template-columns: 4px 1fr auto;">
+              <div style="width: 3px; background: var(--text-3); border-radius: 2px; align-self: stretch;"></div>
+              <div class="today-info">
+                <div class="today-title">QBR prep — Alphabet</div>
+                <div class="today-co">EBR scheduled May 2 · slides not started</div>
+              </div>
+              <span class="today-tag" style="background: var(--bg-3); color: var(--text-1);">4d</span>
+            </div>
+            <div class="today-row" style="grid-template-columns: 4px 1fr auto;">
+              <div style="width: 3px; background: var(--text-3); border-radius: 2px; align-self: stretch;"></div>
+              <div class="today-info">
+                <div class="today-title">Expansion proposal — Abbett</div>
+                <div class="today-co">+$60K Advanced Analytics · draft owed</div>
+              </div>
+              <span class="today-tag" style="background: var(--bg-3); color: var(--text-1);">May 4</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Health Mix from real data -->
-        <div class="panel">
+        <div class="panel panel-health-mix">
           <div class="panel-head">
             <div class="panel-title">Health Mix · Live</div>
             <div class="panel-actions"><div class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div></div>
@@ -1831,7 +2094,7 @@ Sam</div>
         </div>
 
         <!-- Renewal Forecast — REAL upcoming renewals from MCP -->
-        <div class="panel" style="flex:1;">
+        <div class="panel panel-renewal-forecast" style="flex:1;">
           <div class="panel-head">
             <div class="panel-title">Renewal Forecast <span class="count">12</span></div>
             <div class="panel-actions"><div class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 2 6-7"/></svg></div></div>
@@ -1895,7 +2158,7 @@ Sam</div>
         </div>
 
         <!-- Team Pulse -->
-        <div class="panel">
+        <div class="panel panel-team-pulse">
           <div class="panel-head">
             <div class="panel-title">Team Pulse</div>
             <div class="panel-actions">
@@ -1933,6 +2196,57 @@ Sam</div>
   </main>
 </div>
 
+<script>
+  // ===== Mode switcher (Operations <-> CSM Focus) =====
+  (function() {
+    const STORAGE_KEY = 'gs.viewMode';
+    const switchEl = document.getElementById('modeSwitch');
+    const trigger = document.getElementById('modeTrigger');
+    const nameEl = document.getElementById('modeName');
+    if (!switchEl || !trigger || !nameEl) return;
+
+    const MODES = {
+      ops: { label: 'Operations', cls: null },
+      csm: { label: 'CSM Focus', cls: 'mode-csm' }
+    };
+
+    function applyMode(mode) {
+      document.body.classList.remove('mode-csm');
+      const m = MODES[mode] || MODES.ops;
+      if (m.cls) document.body.classList.add(m.cls);
+      nameEl.textContent = m.label;
+      try { localStorage.setItem(STORAGE_KEY, mode); } catch(e){}
+    }
+
+    // Restore saved mode (default to ops)
+    let saved = 'ops';
+    try { saved = localStorage.getItem(STORAGE_KEY) || 'ops'; } catch(e){}
+    applyMode(saved);
+
+    trigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      switchEl.classList.toggle('is-open');
+      trigger.setAttribute('aria-expanded', switchEl.classList.contains('is-open'));
+    });
+
+    switchEl.querySelectorAll('.mode-option').forEach(opt => {
+      opt.addEventListener('click', function(e) {
+        e.stopPropagation();
+        applyMode(opt.dataset.mode);
+        switchEl.classList.remove('is-open');
+      });
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!switchEl.contains(e.target)) {
+        switchEl.classList.remove('is-open');
+      }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') switchEl.classList.remove('is-open');
+    });
+  })();
+</script>
 <script>
   // Toggle inline draft expansion on signal action buttons with data-target
   document.addEventListener('click', function(e) {
