@@ -423,6 +423,178 @@
   }
   .ai-cta button.primary:hover { background: #d4ff20; }
 
+  /* ===== ACTIONABLE SIGNAL CARDS ===== */
+  .signals-stack {
+    display: flex; flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .signal-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 11px 12px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .signal-card:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.14);
+  }
+  .signal-card.is-expanded {
+    background: rgba(255,255,255,0.06);
+    border-color: var(--lime);
+  }
+  .signal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .signal-type {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  .signal-type.risk { background: rgba(248,113,113,0.15); color: #fca5a5; }
+  .signal-type.renewal { background: rgba(251,191,36,0.15); color: #fcd34d; }
+  .signal-type.expansion { background: rgba(200,240,0,0.15); color: var(--lime); }
+  .signal-type::before {
+    content: ""; width: 4px; height: 4px; border-radius: 50%;
+    background: currentColor;
+  }
+  .signal-snooze {
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    padding: 2px;
+    line-height: 0;
+    border-radius: 3px;
+  }
+  .signal-snooze:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.06); }
+  .signal-snooze svg { width: 12px; height: 12px; }
+  .signal-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 5px;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .signal-meta strong { color: #fff; font-weight: 600; }
+  .signal-meta .sep { color: rgba(255,255,255,0.25); }
+  .signal-meta .urgent { color: #fcd34d; font-weight: 500; }
+  .signal-meta .crit { color: #fca5a5; font-weight: 500; }
+  .signal-msg {
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.45;
+    margin-bottom: 10px;
+  }
+  .signal-msg em {
+    color: var(--lime); font-style: normal; font-weight: 500;
+  }
+  .signal-actions {
+    display: flex; gap: 5px; flex-wrap: wrap;
+  }
+  .signal-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.92);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 9px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .signal-btn:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.32);
+  }
+  .signal-btn.primary {
+    background: var(--lime);
+    color: #0c0c0d;
+    border-color: var(--lime);
+    font-weight: 600;
+  }
+  .signal-btn.primary:hover { background: #d4ff20; }
+  .signal-btn svg { width: 11px; height: 11px; }
+
+  /* Expanded draft area */
+  .signal-draft {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255,255,255,0.12);
+    animation: fadeUp 0.25s ease both;
+  }
+  .draft-fields { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+  .draft-row {
+    display: grid; grid-template-columns: 50px 1fr;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .draft-row .lbl {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .draft-row .val {
+    font-size: 12px;
+    color: rgba(255,255,255,0.92);
+  }
+  .draft-body {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 9px 10px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.5;
+    margin-bottom: 8px;
+    font-family: var(--font-sans);
+    white-space: pre-line;
+  }
+  .draft-body em {
+    background: rgba(200,240,0,0.18);
+    color: var(--lime);
+    font-style: normal;
+    padding: 0 3px;
+    border-radius: 2px;
+  }
+  .draft-actions {
+    display: flex; justify-content: space-between; align-items: center; gap: 6px;
+  }
+  .draft-source {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: rgba(255,255,255,0.4);
+  }
+  .draft-buttons { display: flex; gap: 5px; }
+
+  .signal-footer {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.04em;
+  }
+  .signal-footer a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .signal-footer a:hover { color: var(--lime); }
+
   .pulse-list { padding: 6px 0; flex: 1; overflow-y: auto; }
   .pulse-row {
     display: grid;
@@ -965,16 +1137,159 @@
 
       <!-- LEFT COLUMN -->
       <aside class="left">
-        <!-- AI BRIEF — drawn from real timeline data -->
+        <!-- SIGNALS BRIEF — actionable, anchored on real CTAs from MCP -->
         <div class="ai-brief">
-          <div class="ai-tag"><span class="pulse"></span>AI Morning Brief · 6:42 AM</div>
-          <div class="ai-headline">Three signals worth your <em>attention</em> before standup.</div>
-          <div class="ai-body">
-            <strong>Abbett (UK)</strong> has an open Risk CTA flagging viewer license downsell — renewal is 60 days out and no UK-specific call has been logged. <strong>Slack</strong> is prepping for today's call: ROI score jumped 63→90, but support backlog (10+ tickets) and adoption champion silence are both Red. <strong>Abbett</strong> is showing strong expansion signal — 91% deliverability, 55% less manual time, ready for Advanced Analytics.
+          <div class="ai-tag"><span class="pulse"></span>Signals Brief · 6:42 AM · 3 things</div>
+          <div class="ai-headline">Three plays before <em>standup</em>.</div>
+
+          <div class="signals-stack">
+
+            <!-- SIGNAL 1: Abbett — stuck Renewal CTA, 51d to renewal -->
+            <div class="signal-card" id="sig-abbett-renewal">
+              <div class="signal-head">
+                <span class="signal-type renewal">Renewal · 51d</span>
+                <span class="signal-snooze" title="Snooze">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+                </span>
+              </div>
+              <div class="signal-meta">
+                <strong>Abbett</strong>
+                <span class="sep">·</span>
+                <span>$275K ARR</span>
+                <span class="sep">·</span>
+                <span>Green 74</span>
+                <span class="sep">·</span>
+                <span class="urgent">CTA stuck 5 tasks overdue</span>
+              </div>
+              <div class="signal-msg">
+                Renewal CTA opened in 2018, still <em>5 overdue tasks</em>. 51 days to renewal, sponsor (Marie Forshaw) responsive, transition note logged Apr 24 says they're <em>ready to expand</em> — but the close plan hasn't moved.
+              </div>
+              <div class="signal-actions">
+                <button class="signal-btn primary" data-target="draft-abbett">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                  Draft renewal email
+                </button>
+                <button class="signal-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg>
+                  Resume CTA
+                </button>
+                <button class="signal-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                  Loop in AE
+                </button>
+              </div>
+              <div class="signal-draft" id="draft-abbett" style="display:none;">
+                <div class="draft-fields">
+                  <div class="draft-row"><span class="lbl">To</span><span class="val">Marie Forshaw &lt;marie.forshaw@abbett.com&gt; <span style="color:rgba(255,255,255,0.45); font-size:10px;">· Exec Sponsor · last touch Mar 26</span></span></div>
+                  <div class="draft-row"><span class="lbl">Cc</span><span class="val">John Moore, Bob Rigney</span></div>
+                  <div class="draft-row"><span class="lbl">Subject</span><span class="val">Abbett renewal — finalising pricing scenarios for 18 Jun</span></div>
+                </div>
+                <div class="draft-body">Hi Marie,
+
+Following up on the great Q3 review — really pleased to see the <em>91% deliverability</em>, <em>55% reduction in manual campaign time</em>, and the <em>45% YoY uplift in qualified leads</em> coming through.
+
+To finalise pricing for the 18 June renewal, I have three scenarios drafted (base / uplift / uplift + 15% seat growth). The one outstanding input is your <em>headcount projection for the next term</em> — could you share latest numbers by end of week so we can lock the right scenario?
+
+Happy to walk through it on a call if easier — also a good moment to talk about the Advanced Analytics module given the team's interest.
+
+Sam</div>
+                <div class="draft-actions">
+                  <span class="draft-source">Drafted from: transition note (Apr 24) · Abbett CTA · Q3 EBR</span>
+                  <div class="draft-buttons">
+                    <button class="signal-btn">Edit</button>
+                    <button class="signal-btn primary">Send & log to Timeline</button>
+                  </div>
+                </div>
+              </div>
+              <div class="signal-footer">
+                <span>Source: CTA #...JWS · Renewal in 120 Days · 5 overdue tasks</span>
+                <a>Open account ↗</a>
+              </div>
+            </div>
+
+            <!-- SIGNAL 2: Slack — meeting today, support backlog -->
+            <div class="signal-card" id="sig-slack-meeting">
+              <div class="signal-head">
+                <span class="signal-type risk">Risk · meeting in 2h 18m</span>
+                <span class="signal-snooze" title="Snooze">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+                </span>
+              </div>
+              <div class="signal-meta">
+                <strong>Slack</strong>
+                <span class="sep">·</span>
+                <span>$58K ARR</span>
+                <span class="sep">·</span>
+                <span>Yellow 66</span>
+                <span class="sep">·</span>
+                <span class="crit">renewal 35d past</span>
+              </div>
+              <div class="signal-msg">
+                Pre-meeting brief logged Apr 27: ROI score <em>jumped 63→90</em>, but <em>10+ tickets open</em> and adoption champion silent &gt;30d. Lead with the win, then walk the support plan. Allison's team flagged this in the call.
+              </div>
+              <div class="signal-actions">
+                <button class="signal-btn primary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  Open meeting prep
+                </button>
+                <button class="signal-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                  Slack support lead
+                </button>
+                <button class="signal-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+                  Add to brief
+                </button>
+              </div>
+              <div class="signal-footer">
+                <span>Source: Timeline activity Apr 27 · 3 open Risk CTAs · Aria Bennett (owner)</span>
+                <a>Open account ↗</a>
+              </div>
+            </div>
+
+            <!-- SIGNAL 3: Abbett — expansion (Advanced Analytics) -->
+            <div class="signal-card" id="sig-abbett-expansion">
+              <div class="signal-head">
+                <span class="signal-type expansion">Expansion · ready</span>
+                <span class="signal-snooze" title="Snooze">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+                </span>
+              </div>
+              <div class="signal-meta">
+                <strong>Abbett</strong>
+                <span class="sep">·</span>
+                <span>EmailMonkey Campaigns</span>
+                <span class="sep">·</span>
+                <span style="color:var(--lime);">+$60K opp · High priority</span>
+              </div>
+              <div class="signal-msg">
+                Cross-Sell CTA open since Nov 2023, owner Sally McField. Customer has <em>completed training on a product they're not entitled to</em> — explicit buying signal. Confirmed eager for predictive modelling on a 3–4 week timeline.
+              </div>
+              <div class="signal-actions">
+                <button class="signal-btn primary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                  Draft proposal
+                </button>
+                <button class="signal-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                  Loop in AE
+                </button>
+                <button class="signal-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+                  Mark as opp
+                </button>
+              </div>
+              <div class="signal-footer">
+                <span>Source: Cross-Sell CTA #...KRW3 · transition note (Apr 24)</span>
+                <a>Open account ↗</a>
+              </div>
+            </div>
+
           </div>
-          <div class="ai-cta">
-            <button class="primary">Brief me (3 min)</button>
-            <button>Snooze</button>
+
+          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 0.04em;">
+            <span>Synthesised from <span style="color:rgba(255,255,255,0.7);">8 CTAs · 3 timeline notes · 2 health changes</span></span>
+            <a style="color: rgba(255,255,255,0.6); cursor: pointer; text-decoration: none;">See all 12 signals →</a>
           </div>
         </div>
 
@@ -1617,6 +1932,43 @@
     </div>
   </main>
 </div>
+
+<script>
+  // Toggle inline draft expansion on signal action buttons with data-target
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-target]');
+    if (btn) {
+      const target = document.getElementById(btn.dataset.target);
+      if (target) {
+        const card = btn.closest('.signal-card');
+        const isOpen = target.style.display !== 'none';
+        target.style.display = isOpen ? 'none' : 'block';
+        if (card) card.classList.toggle('is-expanded', !isOpen);
+      }
+      return;
+    }
+    // Snooze a signal card (fade & collapse)
+    const snz = e.target.closest('.signal-snooze');
+    if (snz) {
+      const card = snz.closest('.signal-card');
+      if (card) {
+        card.style.transition = 'opacity 0.3s, max-height 0.4s, padding 0.3s, margin 0.3s';
+        card.style.opacity = '0.3';
+        setTimeout(() => {
+          card.style.maxHeight = card.offsetHeight + 'px';
+          requestAnimationFrame(() => {
+            card.style.maxHeight = '0';
+            card.style.paddingTop = '0';
+            card.style.paddingBottom = '0';
+            card.style.marginBottom = '0';
+            card.style.borderWidth = '0';
+            card.style.overflow = 'hidden';
+          });
+        }, 300);
+      }
+    }
+  });
+</script>
 
 </body>
 </html>
