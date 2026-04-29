@@ -1151,6 +1151,309 @@
     background: linear-gradient(90deg, rgba(220,38,38,0.04), transparent 30%) !important;
     box-shadow: inset 2px 0 0 var(--red);
   }
+
+  /* Mobile nav toggle — hidden on desktop, shown via mobile media query */
+  .nav-toggle { display: none; }
+
+  /* =========================================================================
+     RESPONSIVE — TABLET + MOBILE
+     Three breakpoints: ≤480px (phone), ≤900px (tablet), >900px (desktop)
+     Phone strategy: single column flow, table → cards, big touch targets,
+     compressed topbar with off-canvas nav rail.
+     ========================================================================= */
+
+  /* ---------- TABLET (≤900px) ---------- */
+  @media (max-width: 900px) {
+    .canvas {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "hello hello"
+        "kpis  kpis"
+        "left  right"
+        "center center";
+      padding: 14px;
+    }
+    body.mode-csm .canvas {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "hello hello"
+        "left  right"
+        "center center";
+    }
+    .kpis { grid-template-columns: repeat(3, 1fr); }
+    .kpi:nth-child(3n) { border-right: none; }
+    .kpi:nth-child(-n+3) { border-bottom: 1px solid var(--line); }
+
+    .hello-greeting,
+    .hello-greeting-ops,
+    .hello-greeting-csm { font-size: 24px; }
+    .hello { flex-direction: column; gap: 8px; align-items: flex-start; }
+    .hello-meta { flex-wrap: wrap; gap: 12px; }
+
+    .cmd { width: auto; flex: 1; max-width: 360px; }
+    .cmd .ph { font-size: 11px; }
+  }
+
+  /* ---------- PHONE (≤480px) ---------- */
+  @media (max-width: 480px) {
+    /* === Layout === */
+    .app { grid-template-columns: 1fr; }
+    .rail {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: 56px;
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 200;
+      background: var(--bg);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+    }
+    body.rail-open .rail { transform: translateX(0); }
+    body.rail-open::before {
+      content: "";
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 199;
+      animation: fadeUp 0.2s ease both;
+    }
+
+    /* === Topbar — compressed === */
+    .topbar {
+      grid-template-columns: auto 1fr auto;
+      padding: 0 12px;
+      gap: 8px;
+      height: 48px;
+    }
+    /* Hide breadcrumbs (page identity is implicit), the live pill, the MCP pill */
+    .crumbs { display: none; }
+    /* Hamburger — visible only on phone */
+    .nav-toggle {
+      display: inline-grid;
+      place-items: center;
+      width: 36px; height: 36px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+    .nav-toggle:active { background: var(--bg-2); }
+    .nav-toggle svg { width: 20px; height: 20px; }
+    /* Mode switcher — show but tighten */
+    .mode-trigger { padding: 0 8px; height: 30px; }
+    .mode-trigger .mode-label { display: none; }
+    .mode-trigger .mode-name { font-size: 11px; }
+    .mode-menu { width: 240px; left: auto; right: 0; }
+    /* Command bar — collapse to icon */
+    .cmd {
+      width: auto;
+      max-width: none;
+      padding: 0;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      flex: none;
+    }
+    .cmd .ph, .cmd .kbd { display: none; }
+    /* Hide one of the right-side icons to save space */
+    .topbar-right .icon-btn[title="New"] { display: none; }
+    .topbar-right .divider { display: none; }
+
+    /* === Canvas — single column === */
+    .canvas {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "hello"
+        "left"
+        "kpis"
+        "center"
+        "right";
+      padding: 12px;
+      gap: 12px;
+    }
+    body.mode-csm .canvas {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "hello"
+        "left"
+        "right"
+        "center";
+    }
+
+    /* === Hello strip === */
+    .hello-greeting,
+    .hello-greeting-ops,
+    .hello-greeting-csm {
+      font-size: 22px;
+      line-height: 1.15;
+    }
+    .hello-meta { font-size: 10px; gap: 10px; }
+
+    /* === KPI strip → horizontal scroll, 2-up visible === */
+    .kpis {
+      grid-template-columns: repeat(6, 70vw);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .kpi {
+      scroll-snap-align: start;
+      border-bottom: none !important;
+    }
+    .kpi-value { font-size: 24px; }
+
+    /* === Signals Brief — already card-shaped, just tighten === */
+    .ai-brief { padding: 14px 12px; }
+    .ai-headline { font-size: 16px; }
+    .signal-card { padding: 12px 11px; }
+    .signal-actions { gap: 6px; }
+    .signal-btn {
+      padding: 8px 10px;       /* bigger touch target */
+      font-size: 12px;
+      flex: 1 1 auto;          /* let buttons stretch */
+      justify-content: center;
+    }
+    .signal-btn.primary { flex: 1 1 100%; }  /* primary takes its own line */
+    .signal-meta { font-size: 10px; flex-wrap: wrap; }
+
+    /* === Portfolio table → cards ===
+       Re-render every row as a stacked card. The thead disappears
+       (labels live inline as data attributes via ::before on each cell). */
+    .tabs {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 10px;
+    }
+    .tab { white-space: nowrap; padding: 10px 8px; font-size: 9px; }
+    .tabs-right { display: none; }  /* filter chips hide on phone */
+
+    .cs-table thead { display: none; }
+    .cs-table, .cs-table tbody { display: block; width: 100%; }
+    .cs-table tbody tr {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      grid-template-areas:
+        "logo  account  arr"
+        "logo  insight  insight"
+        "footer footer  footer";
+      gap: 4px 10px;
+      padding: 12px;
+      margin: 0 12px 8px;
+      background: var(--bg-1);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: var(--shadow-sm);
+      align-items: center;
+    }
+    .cs-table tbody tr.row-risk {
+      box-shadow: var(--shadow-sm), inset 3px 0 0 var(--red);
+    }
+    .cs-table td { padding: 0; border: none; }
+    /* Hide cells that don't earn their place on a card */
+    .cs-table td.col-trend,
+    .cs-table td.col-segment,
+    .cs-table td.col-csm {
+      display: none;
+    }
+    /* Account cell becomes the card header */
+    .cs-table td:nth-child(1) { grid-area: account; min-width: 0; }
+    .co-name { max-width: none; font-size: 14px; }
+    .co-sub { font-size: 11px; }
+    .co-logo { width: 36px; height: 36px; font-size: 13px; }
+    /* Logo gets its own slot so it can be larger */
+    .cs-table td:nth-child(1) .co-cell { gap: 0; }
+    /* Health pill — inline next to name */
+    .cs-table td:nth-child(2) {
+      grid-area: account;
+      justify-self: end;
+      align-self: start;
+    }
+    .health-pill { font-size: 13px; }
+    .health-ring { width: 26px; height: 26px; }
+    /* ARR — top right */
+    .cs-table td.arr-cell {
+      grid-area: arr;
+      text-align: right;
+      align-self: start;
+    }
+    .arr-cell { font-size: 13px; }
+    /* AI insight — body of card */
+    .cs-table td:nth-child(9) { grid-area: insight; }
+    .ai-insight { max-width: none; font-size: 12px; line-height: 1.4; }
+    .ai-insight span { white-space: normal; }
+    /* Stage + Renewal + Action — footer row */
+    .cs-table td:nth-child(4),
+    .cs-table td:nth-child(7),
+    .cs-table td.action-cell {
+      grid-area: footer;
+      display: inline-flex;
+      align-items: center;
+    }
+    .cs-table td:nth-child(4) {
+      justify-content: flex-start;
+      padding-top: 8px;
+      margin-top: 4px;
+      border-top: 1px solid var(--line-soft);
+      width: 100%;
+    }
+    /* Stack the three footer items horizontally */
+    .cs-table tbody tr {
+      grid-template-areas:
+        "logo  account  arr"
+        "logo  insight  insight"
+        "stage renewal  action";
+    }
+    .cs-table td:nth-child(4) { grid-area: stage; padding-top: 8px; border-top: 1px solid var(--line-soft); }
+    .cs-table td:nth-child(7) { grid-area: renewal; padding-top: 8px; border-top: 1px solid var(--line-soft); justify-content: center; }
+    .cs-table td.action-cell {
+      grid-area: action;
+      padding-top: 8px;
+      border-top: 1px solid var(--line-soft);
+      justify-content: flex-end;
+      gap: 6px;
+    }
+    .mini-btn { width: 32px; height: 32px; }       /* bigger touch target */
+    .mini-btn svg { width: 14px; height: 14px; }
+
+    /* === Right rail panels — full width === */
+    .panel-head { padding: 12px; }
+    .today-row { padding: 11px 12px; gap: 12px; }
+    .today-time { width: 38px; }
+    .today-title { font-size: 13px; }
+    .pipe-row { padding: 12px; }
+
+    /* Sentiment / Health Mix card — relax the 88px circle */
+    .sentiment-card { padding: 12px; gap: 12px; }
+
+    /* Hide overflow on tabs scroll */
+    .tabs { border-bottom: 1px solid var(--line-soft); }
+
+    /* Everything inside the dark draft area — readable on phone */
+    .signal-draft { padding-top: 12px; margin-top: 12px; }
+    .draft-row { grid-template-columns: 60px 1fr; }
+    .draft-row .val { font-size: 11px; word-break: break-word; }
+    .draft-body { font-size: 12px; padding: 10px; }
+    .draft-actions { flex-direction: column; align-items: stretch; gap: 8px; }
+    .draft-buttons { flex-direction: row; justify-content: stretch; }
+    .draft-buttons button { flex: 1; }
+
+    /* Footer text in dark panels can wrap */
+    .signal-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+  }
+
+  /* ---------- VERY NARROW (≤360px) — small phones ---------- */
+  @media (max-width: 360px) {
+    .canvas { padding: 10px; gap: 10px; }
+    .kpis { grid-template-columns: repeat(6, 80vw); }
+    .ai-headline { font-size: 15px; }
+    .signal-actions { flex-direction: column; }
+    .signal-btn { width: 100%; }
+  }
 </style>
 </head>
 <body>
@@ -1185,6 +1488,9 @@
 
   <main class="main">
     <header class="topbar">
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
       <div style="display: flex; align-items: center; gap: 14px; min-width: 0;">
         <div class="crumbs">
           <span>Operations</span>
@@ -2196,6 +2502,29 @@ Sam</div>
   </main>
 </div>
 
+<script>
+  // ===== Mobile nav rail toggle =====
+  (function() {
+    const toggle = document.getElementById('navToggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      document.body.classList.toggle('rail-open');
+    });
+    // Close when tapping outside the rail
+    document.addEventListener('click', function(e) {
+      if (!document.body.classList.contains('rail-open')) return;
+      const rail = document.querySelector('.rail');
+      if (rail && !rail.contains(e.target) && e.target !== toggle) {
+        document.body.classList.remove('rail-open');
+      }
+    });
+    // Close when a rail item is tapped
+    document.querySelectorAll('.rail-btn').forEach(btn => {
+      btn.addEventListener('click', () => document.body.classList.remove('rail-open'));
+    });
+  })();
+</script>
 <script>
   // ===== Mode switcher (Operations <-> CSM Focus) =====
   (function() {
