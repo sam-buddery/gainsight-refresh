@@ -2503,6 +2503,22 @@ Sam</div>
 </div>
 
 <script>
+  // ===== Portfolio row -> C360 navigation =====
+  // Clicking a row in the portfolio table opens the customer 360 page.
+  // For this demo we route everyone to Slack's C360 (which has rich MCP data).
+  // Production would route to /c360/<company-gsid>.
+  (function() {
+    document.querySelectorAll('.cs-table tbody tr').forEach(row => {
+      row.addEventListener('click', function(e) {
+        // Don't navigate if user clicked a button inside the row
+        if (e.target.closest('button, .mini-btn, .action-cell')) return;
+        window.location.href = 'c360.html';
+      });
+    });
+  })();
+</script>
+
+<script>
   // ===== Mobile nav rail toggle =====
   (function() {
     const toggle = document.getElementById('navToggle');

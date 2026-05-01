@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Slack — Customer 360 · Gainsight CS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@300;400;500;600&family=Inter+Tight:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafaf7;
+    --bg-1: #ffffff;
+    --bg-2: #f4f4ef;
+    --bg-3: #ececdf;
+    --line: #e4e4dc;
+    --line-soft: #ededE5;
+    --text: #0c0c0d;
+    --text-1: #3d3d42;
+    --text-2: #6b6b71;
+    --text-3: #9a9aA0;
+    --accent-2: #4f46e5;
+    --lime: #c8f000;
+    --green: #16a34a;
+    --green-soft: #dcfce7;
+    --amber: #d97706;
+    --amber-soft: #fef3c7;
+    --red: #dc2626;
+    --red-soft: #fee2e2;
+    --blue: #2563eb;
+    --blue-soft: #dbeafe;
+    --purple: #7c3aed;
+    --purple-soft: #ede9fe;
+    --pink-soft: #fce7f3;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+
+    --font-display: "Fraunces", Georgia, serif;
+    --font-sans: "Inter Tight", -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", "SF Mono", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 100; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.025 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* APP SHELL */
+  .app { display: grid; grid-template-columns: 56px 1fr; min-height: 100vh; }
+  .rail {
+    background: var(--bg); border-right: 1px solid var(--line);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 14px 0; gap: 4px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .rail-logo {
+    width: 32px; height: 32px; background: var(--text);
+    border-radius: 8px; display: grid; place-items: center;
+    font-family: var(--font-display); font-weight: 700; color: var(--lime);
+    font-size: 18px; margin-bottom: 14px; box-shadow: var(--shadow);
+  }
+  .rail-btn {
+    width: 36px; height: 36px; display: grid; place-items: center;
+    border-radius: 8px; color: var(--text-2); cursor: pointer;
+    transition: all 0.15s; position: relative;
+  }
+  .rail-btn:hover { background: var(--bg-2); color: var(--text); }
+  .rail-btn.active { background: var(--bg-3); color: var(--text); }
+  .rail-btn.active::before {
+    content: ""; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+    width: 2px; height: 18px; background: var(--text); border-radius: 2px;
+  }
+  .rail-btn svg { width: 18px; height: 18px; }
+  .rail-spacer { flex: 1; }
+  .rail-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    display: grid; place-items: center;
+    font-weight: 600; font-size: 11px; color: #fff;
+    border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--line);
+  }
+
+  .main { display: flex; flex-direction: column; min-width: 0; }
+  .topbar {
+    height: 52px; border-bottom: 1px solid var(--line); background: var(--bg);
+    display: flex; align-items: center; padding: 0 18px; gap: 14px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px 6px 8px;
+    background: var(--bg-1); border: 1px solid var(--line); border-radius: 8px;
+    font-size: 12px; color: var(--text); cursor: pointer; text-decoration: none;
+    box-shadow: var(--shadow-sm);
+  }
+  .back-btn:hover { border-color: var(--text-3); }
+  .back-btn svg { width: 14px; height: 14px; }
+  .crumbs {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-2);
+    letter-spacing: 0.02em; text-transform: uppercase;
+  }
+  .crumbs .sep { color: var(--text-3); }
+  .crumbs .current { color: var(--text); }
+  .topbar-spacer { flex: 1; }
+  .mcp-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 7px; background: rgba(200, 240, 0, 0.4);
+    border: 1px solid var(--lime); border-radius: 4px;
+    font-size: 9px; font-family: var(--font-mono); color: var(--text); font-weight: 600;
+  }
+  .live-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+    box-shadow: 0 0 8px rgba(22,163,74,0.5);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { opacity: 0.4; } }
+
+  /* CANVAS */
+  .canvas { padding: 18px; display: flex; flex-direction: column; gap: 14px; max-width: 1600px; }
+
+  /* IDENTITY STRIP */
+  .identity {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 18px;
+    align-items: center;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+  }
+  .id-logo {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, #4A154B, #ECB22E);
+    border-radius: 14px;
+    display: grid; place-items: center;
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 28px;
+    box-shadow: var(--shadow);
+  }
+  .id-info { min-width: 0; }
+  .id-name {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .id-meta {
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-2); letter-spacing: 0.04em; text-transform: uppercase;
+    flex-wrap: wrap;
+  }
+  .id-meta .sep { color: var(--text-3); }
+  .id-meta .val { color: var(--text); font-weight: 500; }
+  .id-meta a { color: var(--accent-2); text-decoration: none; }
+  .id-actions { display: flex; gap: 6px; }
+  .btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    font-family: var(--font-sans);
+    font-size: 12px; font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.15s;
+  }
+  .btn:hover { border-color: var(--text-3); background: var(--bg-2); }
+  .btn.primary { background: var(--text); color: #fff; border-color: var(--text); }
+  .btn.primary:hover { background: #1a1a1f; }
+  .btn svg { width: 13px; height: 13px; }
+
+  /* JOURNEY SPINE — the hero */
+  .journey {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .journey-head {
+    padding: 14px 20px 0;
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  .journey-title {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 0.1em;
+    color: var(--text-1); text-transform: uppercase; font-weight: 500;
+  }
+  .journey-summary {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 400;
+    letter-spacing: -0.01em;
+    margin: 6px 20px 14px;
+    line-height: 1.35;
+  }
+  .journey-summary em {
+    font-style: italic;
+    color: var(--accent-2);
+    position: relative;
+  }
+  .journey-summary em::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 5px;
+    background: var(--lime); z-index: -1; opacity: 0.7; border-radius: 1px;
+  }
+  .journey-summary .crit { color: var(--red); font-style: normal; font-weight: 500; }
+
+  /* The actual spine */
+  .stations {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    position: relative;
+    padding: 8px 20px 20px;
+  }
+  .station {
+    padding: 14px 12px 10px;
+    position: relative;
+    cursor: pointer;
+    border-right: 1px dashed var(--line);
+  }
+  .station:last-child { border-right: none; }
+  .station-marker {
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--bg-1);
+    border: 2px solid var(--text-3);
+    z-index: 2;
+  }
+  .station.complete .station-marker {
+    background: var(--text);
+    border-color: var(--text);
+  }
+  .station.current .station-marker {
+    background: var(--lime);
+    border-color: var(--text);
+    box-shadow: 0 0 0 4px rgba(200,240,0,0.3), 0 0 20px rgba(200,240,0,0.4);
+    width: 14px; height: 14px;
+    top: -3px;
+  }
+  .station-line {
+    position: absolute;
+    top: 4px;
+    left: 0; right: 0;
+    height: 2px;
+    background: var(--bg-3);
+  }
+  .station.complete::before {
+    content: ""; position: absolute;
+    top: 4px;
+    left: -1px; right: 50%;
+    height: 2px;
+    background: var(--text);
+    z-index: 1;
+  }
+  .station.current::before {
+    content: ""; position: absolute;
+    top: 4px;
+    left: -1px; right: 50%;
+    height: 2px;
+    background: var(--text);
+    z-index: 1;
+  }
+  /* For first station, no left line; for last station — no right line */
+  .station-stage {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-bottom: 4px;
+    margin-top: 14px;
+  }
+  .station.current .station-stage { color: var(--accent-2); font-weight: 600; }
+  .station.complete .station-stage { color: var(--text-1); }
+  .station-name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .station-fact {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .station-fact .val { color: var(--text); font-weight: 500; }
+  .station-fact .crit { color: var(--red); font-weight: 500; }
+  .station-fact .ok { color: var(--green); font-weight: 500; }
+  .station-status {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 6px;
+    padding: 2px 6px;
+    background: var(--bg-2);
+    border-radius: 3px;
+    font-size: 9px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+  .station-status.warn { background: var(--amber-soft); color: var(--amber); }
+  .station-status.alert { background: var(--red-soft); color: var(--red); }
+  .station-status.good { background: var(--green-soft); color: var(--green); }
+  .station-status.now { background: rgba(200, 240, 0, 0.4); color: var(--text); }
+
+  /* PULSE PANEL — 4-up signal reconciliation */
+  .pulse {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .pulse-cell {
+    padding: 16px 18px;
+    border-right: 1px solid var(--line);
+    position: relative;
+  }
+  .pulse-cell:last-child { border-right: none; }
+  .pulse-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .pulse-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-2);
+    text-transform: uppercase;
+  }
+  .pulse-source {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-3);
+  }
+  .pulse-value {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .pulse-value .unit { font-size: 14px; color: var(--text-2); }
+  .pulse-value.green { color: var(--green); }
+  .pulse-value.amber { color: var(--amber); }
+  .pulse-value.red { color: var(--red); }
+  .pulse-band {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .pulse-band::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+  }
+  .pulse-band.green { color: var(--green); }
+  .pulse-band.green::before { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .pulse-band.amber { color: var(--amber); }
+  .pulse-band.amber::before { background: var(--amber); }
+  .pulse-band.red { color: var(--red); }
+  .pulse-band.red::before { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  .pulse-trend-line {
+    height: 32px; width: 100%; margin-bottom: 8px;
+  }
+  .pulse-trend-line path { fill: none; stroke-width: 1.5; }
+  .pulse-evidence {
+    font-size: 11px;
+    color: var(--text-1);
+    line-height: 1.4;
+    border-top: 1px solid var(--line-soft);
+    padding-top: 8px;
+  }
+  .pulse-evidence .stat {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .pulse-trend-pill {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 9px; font-weight: 600;
+  }
+  .pulse-trend-pill.up { background: var(--green-soft); color: var(--green); }
+  .pulse-trend-pill.down { background: var(--red-soft); color: var(--red); }
+  .pulse-trend-pill.flat { background: var(--bg-3); color: var(--text-2); }
+
+  /* MAIN GRID — adoption + sentiment + sidebar */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 14px;
+  }
+  .main-left { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .main-right { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+  /* PANEL BASE */
+  .panel {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .panel-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-1);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .panel-title .count {
+    background: var(--bg-2);
+    color: var(--text);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    border: 1px solid var(--line);
+    margin-left: 6px;
+  }
+  .panel-actions { display: flex; gap: 4px; }
+  .panel-actions .ico-btn {
+    width: 22px; height: 22px;
+    display: grid; place-items: center;
+    border-radius: 4px; cursor: pointer; color: var(--text-2);
+  }
+  .panel-actions .ico-btn:hover { background: var(--bg-2); color: var(--text); }
+  .panel-actions .ico-btn svg { width: 12px; height: 12px; }
+
+  /* ADOPTION MATRIX */
+  .adoption-top {
+    padding: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .adoption-stat {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .adoption-stat .label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .adoption-stat .number {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .adoption-stat .number .sub { font-size: 14px; color: var(--text-2); }
+  .adoption-stat .sub-text {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+  }
+  .adoption-stat .sub-text.warn { color: var(--amber); font-weight: 500; }
+  .adoption-stat .sub-text.crit { color: var(--red); font-weight: 500; }
+  .gauge {
+    position: relative;
+    width: 100%; height: 8px;
+    background: var(--bg-3);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+  .gauge > div {
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .feature-matrix {
+    padding: 14px 18px 16px;
+  }
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr 60px 60px 60px 60px;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .feature-row:last-child { border-bottom: none; }
+  .feature-row.header {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--text-2);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+  }
+  .feature-row.header > div:not(:first-child) {
+    text-align: center;
+  }
+  .feature-name {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .feature-name .desc {
+    font-size: 11px;
+    color: var(--text-2);
+    font-weight: 400;
+  }
+  .feature-cell {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-1);
+  }
+  .feature-cell .heat {
+    display: inline-block;
+    width: 100%; max-width: 44px;
+    height: 26px;
+    border-radius: 4px;
+    line-height: 26px;
+    font-weight: 600;
+  }
+  .feature-cell .heat.h0 { background: var(--bg-3); color: var(--text-3); }
+  .feature-cell .heat.h1 { background: rgba(200, 240, 0, 0.15); color: var(--text-1); }
+  .feature-cell .heat.h2 { background: rgba(200, 240, 0, 0.4); color: var(--text); }
+  .feature-cell .heat.h3 { background: var(--lime); color: var(--text); }
+  .feature-cell .heat.warn { background: var(--amber-soft); color: var(--amber); }
+  .feature-cell .heat.crit { background: var(--red-soft); color: var(--red); }
+  .feature-cell .heat.declining { background: var(--red-soft); color: var(--red); }
+
+  /* SENTIMENT TIMELINE — fused signals */
+  .sentiment-tl {
+    padding: 18px;
+  }
+  .sentiment-meta {
+    display: flex; gap: 16px; margin-bottom: 12px;
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--text-2); text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sentiment-meta .legend-item {
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .sentiment-meta .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .timeline-canvas {
+    position: relative;
+    height: 130px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 18px;
+  }
+  /* Center axis line */
+  .timeline-axis {
+    position: absolute;
+    top: 50%; left: 0; right: 0;
+    height: 1px;
+    background: var(--line);
+  }
+  .timeline-axis-label {
+    position: absolute;
+    left: 0;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-3);
+    background: var(--bg-1);
+    padding: 0 4px;
+    transform: translateY(-50%);
+  }
+  .timeline-axis-label.top { top: 0; }
+  .timeline-axis-label.mid { top: 50%; }
+  .timeline-axis-label.bot { bottom: 0; transform: translateY(50%); }
+  .timeline-event {
+    position: absolute;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-1);
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    transition: transform 0.15s;
+  }
+  .timeline-event:hover {
+    transform: translate(-50%, -50%) scale(1.3);
+    z-index: 5;
+  }
+  .timeline-event.pos { background: var(--green); }
+  .timeline-event.neu { background: var(--text-3); }
+  .timeline-event.neg { background: var(--red); }
+  /* Different shapes for different sources */
+  .timeline-event.email { border-radius: 2px; }
+  .timeline-event.meeting { border-radius: 50%; width: 14px; height: 14px; }
+  .timeline-event.support { border-radius: 50%; width: 10px; height: 10px; }
+  .timeline-event.nps {
+    border-radius: 0; transform: translate(-50%, -50%) rotate(45deg);
+    width: 10px; height: 10px;
+  }
+  .timeline-event.nps:hover {
+    transform: translate(-50%, -50%) rotate(45deg) scale(1.3);
+  }
+  .timeline-x-axis {
+    display: flex; justify-content: space-between;
+    margin-top: 6px;
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--text-2);
+  }
+  /* Stack of recent items */
+  .sentiment-recent { display: flex; flex-direction: column; gap: 0; }
+  .recent-item {
+    display: grid;
+    grid-template-columns: 70px 1fr auto;
+    gap: 12px; padding: 10px 0;
+    border-top: 1px solid var(--line-soft);
+    align-items: start;
+  }
+  .recent-item:first-child { border-top: none; padding-top: 4px; }
+  .recent-when {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .recent-info { min-width: 0; }
+  .recent-title {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    line-height: 1.3;
+  }
+  .recent-snippet {
+    font-size: 11px;
+    color: var(--text-2);
+    line-height: 1.4;
+  }
+  .recent-source {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+    align-self: flex-start;
+  }
+  .recent-source.meeting { background: var(--blue-soft); color: var(--blue); }
+  .recent-source.email { background: var(--purple-soft); color: var(--purple); }
+  .recent-source.support { background: var(--red-soft); color: var(--red); }
+  .recent-source.nps { background: var(--amber-soft); color: var(--amber); }
+  .recent-source.scorecard { background: var(--green-soft); color: var(--green); }
+
+  /* STAKEHOLDERS */
+  .stakeholders { padding: 4px 0; }
+  .stk-row {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: 10px;
+    padding: 9px 16px;
+    align-items: center;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .stk-row:last-child { border-bottom: none; }
+  .stk-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 600;
+    color: #fff;
+  }
+  .stk-info { min-width: 0; }
+  .stk-name {
+    font-size: 12px; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .stk-role {
+    font-size: 11px; color: var(--text-2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .stk-meta {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-2);
+  }
+  .stk-tier {
+    display: inline-block;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .stk-tier.exec { background: var(--purple-soft); color: var(--purple); }
+  .stk-tier.champ { background: var(--green-soft); color: var(--green); }
+  .stk-tier.lost { background: var(--red-soft); color: var(--red); }
+  .stk-tier.user { background: var(--bg-3); color: var(--text-1); }
+  .stk-last {
+    display: block;
+    margin-top: 2px;
+    color: var(--text-2);
+  }
+  .stk-last.crit { color: var(--red); }
+
+  /* OPEN CTAs panel */
+  .ctas { padding: 4px 0; }
+  .cta-row {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--line-soft);
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 4px 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+  .cta-row:hover { background: var(--bg-2); }
+  .cta-row:last-child { border-bottom: none; }
+  .cta-bar { width: 3px; align-self: stretch; border-radius: 2px; }
+  .cta-bar.crit { background: var(--red); box-shadow: 0 0 6px rgba(220,38,38,0.4); }
+  .cta-bar.high { background: var(--amber); }
+  .cta-bar.med { background: var(--blue); }
+  .cta-bar.low { background: var(--text-3); }
+  .cta-info { min-width: 0; }
+  .cta-name {
+    font-size: 12px; font-weight: 600; line-height: 1.3;
+    margin-bottom: 2px;
+  }
+  .cta-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+  }
+  .cta-meta .reason { color: var(--text-1); }
+  .cta-due {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .cta-due.urgent { color: var(--red); font-weight: 600; }
+  .cta-due.warn { color: var(--amber); font-weight: 500; }
+
+  /* CONTRACT PANEL */
+  .contract { padding: 16px; }
+  .contract-row {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 12px;
+  }
+  .contract-row:last-child { border-bottom: none; }
+  .contract-row .label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .contract-row .val { font-weight: 500; }
+  .contract-row .val.crit { color: var(--red); }
+  .contract-row .val.warn { color: var(--amber); }
+
+  /* ACTIVITY FEED — full width bottom */
+  .activity {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .activity-tabs {
+    display: flex; gap: 4px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .activity-tab {
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.1s;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-weight: 500;
+  }
+  .activity-tab:hover { color: var(--text-1); }
+  .activity-tab.active { color: var(--text); border-bottom-color: var(--text); }
+  .activity-tab .pip {
+    background: var(--bg-2); padding: 1px 5px; border-radius: 3px;
+    font-size: 9px; color: var(--text-1);
+    border: 1px solid var(--line);
+  }
+  .activity-tab.active .pip {
+    background: var(--text); color: var(--bg-1); border-color: var(--text);
+  }
+  .activity-feed {
+    padding: 4px 0;
+    max-height: 460px;
+    overflow-y: auto;
+  }
+  .feed-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 14px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line-soft);
+    position: relative;
+  }
+  .feed-item:last-child { border-bottom: none; }
+  .feed-icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: grid; place-items: center;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .feed-icon.meeting { background: var(--blue); }
+  .feed-icon.email { background: var(--purple); }
+  .feed-icon.update { background: var(--text); }
+  .feed-icon.cta { background: var(--amber); }
+  .feed-icon svg { width: 14px; height: 14px; }
+  .feed-body { min-width: 0; }
+  .feed-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 4px;
+  }
+  .feed-subject {
+    font-size: 13px; font-weight: 600;
+    line-height: 1.3;
+  }
+  .feed-when {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .feed-author {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .feed-author .name { color: var(--text-1); font-weight: 500; }
+  .feed-content {
+    font-size: 12px;
+    color: var(--text-1);
+    line-height: 1.5;
+  }
+  .feed-content .snippet {
+    color: var(--text-1);
+  }
+  .feed-content em.tag {
+    font-style: normal;
+    background: rgba(200, 240, 0, 0.18);
+    padding: 0 4px;
+    border-radius: 3px;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .feed-content em.crit {
+    font-style: normal;
+    color: var(--red);
+    font-weight: 500;
+  }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .canvas > * { animation: fadeUp 0.5s ease both; }
+  .canvas > *:nth-child(2) { animation-delay: 0.05s; }
+  .canvas > *:nth-child(3) { animation-delay: 0.1s; }
+  .canvas > *:nth-child(4) { animation-delay: 0.15s; }
+  .canvas > *:nth-child(5) { animation-delay: 0.2s; }
+
+  /* RESPONSIVE — graceful collapse */
+  @media (max-width: 1100px) {
+    .pulse { grid-template-columns: repeat(2, 1fr); }
+    .pulse-cell:nth-child(2) { border-right: none; }
+    .pulse-cell:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+    .stations { grid-template-columns: repeat(3, 1fr); }
+    .station:nth-child(3n) { border-right: none; }
+    .station:nth-child(-n+3) { border-bottom: 1px dashed var(--line); padding-bottom: 16px; margin-bottom: 8px; }
+    .main-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 700px) {
+    .app { grid-template-columns: 1fr; }
+    .rail { display: none; }
+    .canvas { padding: 12px; gap: 12px; }
+    .identity { grid-template-columns: 1fr; gap: 12px; padding: 14px; }
+    .id-actions { justify-content: flex-start; flex-wrap: wrap; }
+    .id-name { font-size: 24px; }
+    .pulse { grid-template-columns: 1fr; }
+    .pulse-cell { border-right: none !important; border-bottom: 1px solid var(--line); }
+    .pulse-cell:last-child { border-bottom: none; }
+    .pulse-value { font-size: 28px; }
+    .stations { grid-template-columns: 1fr; }
+    .station { border-right: none !important; border-bottom: 1px dashed var(--line); }
+    .station:last-child { border-bottom: none; }
+    .station-marker { display: none; }
+    .station::before { display: none; }
+    .station-stage { margin-top: 0; }
+    .feature-row { grid-template-columns: 1fr 40px 40px 40px 40px; gap: 6px; }
+    .feature-name { font-size: 12px; }
+    .adoption-top { grid-template-columns: 1fr; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- LEFT RAIL — same as dashboard -->
+  <aside class="rail">
+    <div class="rail-logo">G</div>
+    <div class="rail-btn" title="Home" onclick="window.location.href='index.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 4l9 8M5 10v10h14V10"/></svg>
+    </div>
+    <div class="rail-btn active" title="Portfolio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    </div>
+    <div class="rail-btn" title="Cockpit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    </div>
+    <div class="rail-btn" title="Insights">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 2 6-7"/></svg>
+    </div>
+    <div class="rail-btn" title="Journey">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 6h7a3 3 0 013 3v6"/></svg>
+    </div>
+    <div class="rail-btn" title="Inbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>
+    </div>
+    <div class="rail-spacer"></div>
+    <div class="rail-avatar" title="Sam Buddery">SB</div>
+  </aside>
+
+  <main class="main">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <a class="back-btn" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Portfolio
+      </a>
+      <div class="crumbs">
+        <span>Operations</span>
+        <span class="sep">/</span>
+        <span>Portfolio</span>
+        <span class="sep">/</span>
+        <span class="current">Slack</span>
+      </div>
+      <div class="topbar-spacer"></div>
+      <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-2); display: inline-flex; align-items: center; gap: 6px;">
+        <span class="live-dot"></span>Live
+      </span>
+      <span class="mcp-pill">⚡ MCP · Gainsight</span>
+    </header>
+
+    <div class="canvas">
+
+      <!-- =========== IDENTITY STRIP =========== -->
+      <section class="identity">
+        <div class="id-logo">S</div>
+        <div class="id-info">
+          <div class="id-name">Slack</div>
+          <div class="id-meta">
+            <span><span class="val">Technology</span></span>
+            <span class="sep">·</span>
+            <span><span class="val">155</span> users</span>
+            <span class="sep">·</span>
+            <span><span class="val">$58.4K</span> ARR</span>
+            <span class="sep">·</span>
+            <span><span class="val">$4.0K</span> MRR</span>
+            <span class="sep">·</span>
+            <span>Tenure <span class="val">21mo</span></span>
+            <span class="sep">·</span>
+            <span>CSM <a href="#">Sally McField</a></span>
+            <span class="sep">·</span>
+            <span>EXEC <a href="#">Tara Boyette</a></span>
+          </div>
+        </div>
+        <div class="id-actions">
+          <button class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Log activity
+          </button>
+          <button class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            Schedule
+          </button>
+          <button class="btn primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg>
+            New CTA
+          </button>
+        </div>
+      </section>
+
+      <!-- =========== JOURNEY SPINE =========== -->
+      <section class="journey">
+        <div class="journey-head">
+          <div class="journey-title">Customer Journey</div>
+          <div class="panel-actions">
+            <div class="ico-btn" style="width: 22px; height: 22px; display: grid; place-items: center; cursor: pointer; color: var(--text-2); border-radius: 4px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="journey-summary">
+          21 months in. Onboarding completed, adoption is sticky, but Slack is sitting at <em>renewal</em> with the contract <span class="crit">35 days past due</span> and a Tier Activation Risk CTA open. Renewed once successfully (Mar 26 email). Strong expansion signal from Allison's leadership; tactical risk on support backlog.
+        </div>
+        <div class="stations">
+
+          <div class="station complete">
+            <div class="station-line"></div>
+            <div class="station-marker"></div>
+            <div class="station-stage">01 · Acquired</div>
+            <div class="station-name">Sale closed</div>
+            <div class="station-fact">
+              <span class="val">Aug 03 2024</span><br>
+              Original contract · ENT
+            </div>
+            <span class="station-status good">✓ done</span>
+          </div>
+
+          <div class="station complete">
+            <div class="station-marker"></div>
+            <div class="station-stage">02 · Onboarding</div>
+            <div class="station-name">Implementation</div>
+            <div class="station-fact">
+              All licenses live<br>
+              CSAT <span class="ok">8/10</span>
+            </div>
+            <span class="station-status good">✓ done</span>
+          </div>
+
+          <div class="station complete">
+            <div class="station-marker"></div>
+            <div class="station-stage">03 · Adopting</div>
+            <div class="station-name">In flight</div>
+            <div class="station-fact">
+              Depth <span class="ok">71</span> · Engagement <span class="crit">48</span><br>
+              Champion silent <span class="crit">30+ days</span>
+            </div>
+            <span class="station-status warn">mixed</span>
+          </div>
+
+          <div class="station complete">
+            <div class="station-marker"></div>
+            <div class="station-stage">04 · Value</div>
+            <div class="station-name">ROI proven</div>
+            <div class="station-fact">
+              ROI score <span class="ok">63 → 90</span><br>
+              Allison: <em>"strong for expansion"</em>
+            </div>
+            <span class="station-status good">✓ proven</span>
+          </div>
+
+          <div class="station current">
+            <div class="station-marker"></div>
+            <div class="station-stage">05 · Renewal</div>
+            <div class="station-name">Where we are</div>
+            <div class="station-fact">
+              Renewal <span class="val">24 Mar 26</span><br>
+              <span class="crit">35d past · in negotiation</span>
+            </div>
+            <span class="station-status now">● now</span>
+          </div>
+
+          <div class="station">
+            <div class="station-marker"></div>
+            <div class="station-stage">06 · Expansion</div>
+            <div class="station-name">Next move</div>
+            <div class="station-fact">
+              Cross-sell CTA open<br>
+              Consumption Threshold
+            </div>
+            <span class="station-status">teed up</span>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =========== PULSE — 4-up signal reconciliation =========== -->
+      <section class="pulse">
+
+        <div class="pulse-cell">
+          <div class="pulse-head">
+            <span class="pulse-label">Health Score</span>
+            <span class="pulse-source">Gainsight · 12w</span>
+          </div>
+          <div class="pulse-value amber">66<span class="unit">/100</span></div>
+          <div class="pulse-band amber">Yellow · flat</div>
+          <svg class="pulse-trend-line" viewBox="0 0 100 32" preserveAspectRatio="none">
+            <path d="M0,16 L7,16 L14,16 L21,16 L28,16 L35,16 L42,16 L49,16 L56,16 L63,16 L70,16 L77,16 L84,16 L91,16 L100,16" stroke="var(--amber)"/>
+          </svg>
+          <div class="pulse-evidence">
+            <span class="stat">Driving signal</span>
+            Outcomes <strong>70 ↑</strong> · Experience <strong>63 →</strong> · Community <strong>63 ↓</strong>
+          </div>
+        </div>
+
+        <div class="pulse-cell">
+          <div class="pulse-head">
+            <span class="pulse-label">Sentiment</span>
+            <span class="pulse-source">Staircase + CSM</span>
+          </div>
+          <div class="pulse-value green">+76</div>
+          <div class="pulse-band green">Positive · CSM</div>
+          <svg class="pulse-trend-line" viewBox="0 0 100 32" preserveAspectRatio="none">
+            <path d="M0,18 L14,16 L28,15 L42,12 L56,11 L70,8 L84,6 L100,6" stroke="var(--green)"/>
+          </svg>
+          <div class="pulse-evidence">
+            <span class="stat">CSM read · Allison's leadership team</span>
+            <em>"Looking strong for expansion with their renewal"</em>
+          </div>
+        </div>
+
+        <div class="pulse-cell">
+          <div class="pulse-head">
+            <span class="pulse-label">NPS</span>
+            <span class="pulse-source">Survey · aggregate</span>
+          </div>
+          <div class="pulse-value amber">+57</div>
+          <div class="pulse-band amber">
+            <span class="pulse-trend-pill down">▼ −20</span>
+          </div>
+          <svg class="pulse-trend-line" viewBox="0 0 100 32" preserveAspectRatio="none">
+            <path d="M0,4 L20,5 L40,7 L55,10 L70,18 L85,22 L100,22" stroke="var(--amber)"/>
+          </svg>
+          <div class="pulse-evidence">
+            <span class="stat">Last survey · 6 weeks ago</span>
+            Was 77 (Green) · dropped after support incidents in Mar
+          </div>
+        </div>
+
+        <div class="pulse-cell">
+          <div class="pulse-head">
+            <span class="pulse-label">CSAT</span>
+            <span class="pulse-source">Support · last 30d</span>
+          </div>
+          <div class="pulse-value red">50<span class="unit">/100</span></div>
+          <div class="pulse-band red">Poor · support</div>
+          <svg class="pulse-trend-line" viewBox="0 0 100 32" preserveAspectRatio="none">
+            <path d="M0,8 L20,10 L40,14 L55,18 L70,22 L85,24 L100,24" stroke="var(--red)"/>
+          </svg>
+          <div class="pulse-evidence">
+            <span class="stat">10+ tickets open · Aria Bennett (last reviewed)</span>
+            <strong>Single biggest drag</strong> on overall health score
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =========== MAIN GRID =========== -->
+      <div class="main-grid">
+
+        <!-- LEFT COLUMN -->
+        <div class="main-left">
+
+          <!-- ADOPTION & ENGAGEMENT MATRIX -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Adoption & Engagement</div>
+              <div class="panel-actions">
+                <div class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
+              </div>
+            </div>
+
+            <div class="adoption-top">
+              <div class="adoption-stat">
+                <div class="label">Weekly Active</div>
+                <div class="number">128<span class="sub">/155</span></div>
+                <div class="gauge"><div style="width:82.5%; background:var(--green);"></div></div>
+                <div class="sub-text">82% · steady · last 4w</div>
+              </div>
+              <div class="adoption-stat">
+                <div class="label">Seat Utilisation</div>
+                <div class="number">142<span class="sub">/155</span></div>
+                <div class="gauge"><div style="width:91.6%; background:var(--green);"></div></div>
+                <div class="sub-text">91% · expansion-ready</div>
+              </div>
+              <div class="adoption-stat">
+                <div class="label">Adoption Depth</div>
+                <div class="number">8<span class="sub">/10</span></div>
+                <div class="gauge"><div style="width:80%; background:var(--green);"></div></div>
+                <div class="sub-text warn">Champion silent &gt;30d</div>
+              </div>
+            </div>
+
+            <div class="feature-matrix">
+              <div class="feature-row header">
+                <div>Feature</div>
+                <div>Entitled</div>
+                <div>Adopted</div>
+                <div>Heavy use</div>
+                <div>30d trend</div>
+              </div>
+
+              <div class="feature-row">
+                <div class="feature-name">Channels & DMs<div class="desc">Core messaging</div></div>
+                <div class="feature-cell"><span class="heat h3">155</span></div>
+                <div class="feature-cell"><span class="heat h3">152</span></div>
+                <div class="feature-cell"><span class="heat h3">88%</span></div>
+                <div class="feature-cell"><span class="heat h2">flat</span></div>
+              </div>
+
+              <div class="feature-row">
+                <div class="feature-name">Huddles<div class="desc">Voice / video</div></div>
+                <div class="feature-cell"><span class="heat h3">155</span></div>
+                <div class="feature-cell"><span class="heat h2">112</span></div>
+                <div class="feature-cell"><span class="heat h2">63%</span></div>
+                <div class="feature-cell"><span class="heat h3">+9%</span></div>
+              </div>
+
+              <div class="feature-row">
+                <div class="feature-name">Workflows / Automations<div class="desc">No-code automation</div></div>
+                <div class="feature-cell"><span class="heat h3">155</span></div>
+                <div class="feature-cell"><span class="heat h1">38</span></div>
+                <div class="feature-cell"><span class="heat warn">21%</span></div>
+                <div class="feature-cell"><span class="heat declining">−12%</span></div>
+              </div>
+
+              <div class="feature-row">
+                <div class="feature-name">Canvas<div class="desc">Collaborative docs</div></div>
+                <div class="feature-cell"><span class="heat h3">155</span></div>
+                <div class="feature-cell"><span class="heat h2">94</span></div>
+                <div class="feature-cell"><span class="heat h1">31%</span></div>
+                <div class="feature-cell"><span class="heat h3">+18%</span></div>
+              </div>
+
+              <div class="feature-row">
+                <div class="feature-name">SSO / SCIM<div class="desc">Identity & provisioning</div></div>
+                <div class="feature-cell"><span class="heat h3">155</span></div>
+                <div class="feature-cell"><span class="heat h3">155</span></div>
+                <div class="feature-cell"><span class="heat h3">100%</span></div>
+                <div class="feature-cell"><span class="heat h2">flat</span></div>
+              </div>
+
+              <div class="feature-row">
+                <div class="feature-name">Audit Logs / DLP<div class="desc">Compliance · ENT only</div></div>
+                <div class="feature-cell"><span class="heat h3">155</span></div>
+                <div class="feature-cell"><span class="heat h0">0</span></div>
+                <div class="feature-cell"><span class="heat crit">unused</span></div>
+                <div class="feature-cell"><span class="heat declining">never</span></div>
+              </div>
+
+              <div class="feature-row">
+                <div class="feature-name">AI Recap / Search<div class="desc">Premium add-on</div></div>
+                <div class="feature-cell"><span class="heat h0">0</span></div>
+                <div class="feature-cell"><span class="heat h0">—</span></div>
+                <div class="feature-cell"><span class="heat h0">—</span></div>
+                <div class="feature-cell"><span class="heat h2">📈 cross-sell</span></div>
+              </div>
+
+              <div class="feature-row">
+                <div class="feature-name">Connect (Slack Connect)<div class="desc">External orgs</div></div>
+                <div class="feature-cell"><span class="heat h3">155</span></div>
+                <div class="feature-cell"><span class="heat h1">28</span></div>
+                <div class="feature-cell"><span class="heat h1">12%</span></div>
+                <div class="feature-cell"><span class="heat h2">+4%</span></div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- SENTIMENT TIMELINE — fused signals -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Sentiment Timeline · multi-source</div>
+              <div class="panel-actions">
+                <div class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
+              </div>
+            </div>
+            <div class="sentiment-tl">
+              <div class="sentiment-meta">
+                <span class="legend-item"><span class="dot" style="background:var(--green);"></span>Positive</span>
+                <span class="legend-item"><span class="dot" style="background:var(--text-3);"></span>Neutral</span>
+                <span class="legend-item"><span class="dot" style="background:var(--red);"></span>Negative</span>
+                <span class="legend-item">●&nbsp;Meeting</span>
+                <span class="legend-item">■&nbsp;Email</span>
+                <span class="legend-item">◆&nbsp;NPS / CSAT</span>
+              </div>
+              <div class="timeline-canvas">
+                <span class="timeline-axis-label top">+</span>
+                <span class="timeline-axis-label mid">0</span>
+                <span class="timeline-axis-label bot">−</span>
+                <div class="timeline-axis"></div>
+                <!-- Plot points across 90 days. Each event is positioned by % left + % top -->
+                <!-- Day -90: NPS 77 (Green) -->
+                <div class="timeline-event nps pos" style="left:3%; top:18%;" title="NPS 77 · Feb 1"></div>
+                <!-- Day -82: meeting (positive) -->
+                <div class="timeline-event meeting pos" style="left:11%; top:25%;" title="Meeting · Feb 9"></div>
+                <!-- Day -75: support ticket spike begins -->
+                <div class="timeline-event support neg" style="left:18%; top:62%;" title="Support tickets spike · Feb 16"></div>
+                <div class="timeline-event support neg" style="left:21%; top:65%;" title="Support · Feb 19"></div>
+                <div class="timeline-event support neg" style="left:24%; top:70%;" title="Support · Feb 22"></div>
+                <!-- Day -65: meeting -->
+                <div class="timeline-event meeting neu" style="left:31%; top:48%;" title="Meeting · Mar 1"></div>
+                <!-- Day -55: NPS dropped to 57 -->
+                <div class="timeline-event nps neu" style="left:42%; top:42%;" title="NPS 57 · Mar 11"></div>
+                <!-- Day -45: support ticket -->
+                <div class="timeline-event support neg" style="left:48%; top:72%;" title="Support · Mar 17"></div>
+                <div class="timeline-event support neg" style="left:51%; top:78%;" title="Support · Mar 20"></div>
+                <!-- Day -36: Email "Thank You for Renewing" — positive -->
+                <div class="timeline-event email pos" style="left:58%; top:22%;" title="Email · Mar 26 · Thank You for Renewing"></div>
+                <!-- Day -30: ROI win presentation -->
+                <div class="timeline-event meeting pos" style="left:66%; top:14%;" title="Meeting · ROI win · Apr 1"></div>
+                <!-- Day -22: support ticket continues -->
+                <div class="timeline-event support neg" style="left:72%; top:75%;" title="Support · Apr 9"></div>
+                <!-- Day -15: meeting (neutral) -->
+                <div class="timeline-event meeting neu" style="left:80%; top:48%;" title="Meeting · Apr 16"></div>
+                <!-- Day -8: support ticket -->
+                <div class="timeline-event support neg" style="left:88%; top:80%;" title="Support · Apr 23"></div>
+                <!-- Day -4: pre-meeting briefing (neutral, internal) -->
+                <div class="timeline-event meeting neu" style="left:94%; top:35%;" title="Pre-meeting briefing · Apr 27"></div>
+                <!-- Today CSM Sentiment 76 -->
+                <div class="timeline-event nps pos" style="left:99%; top:18%;" title="CSM Sentiment 76 · today"></div>
+              </div>
+              <div class="timeline-x-axis">
+                <span>Feb 1</span><span>Feb 22</span><span>Mar 15</span><span>Apr 5</span><span>Apr 28</span>
+              </div>
+
+              <div class="sentiment-recent">
+                <div class="recent-item">
+                  <div class="recent-when">Apr 27 · 4d</div>
+                  <div class="recent-info">
+                    <div class="recent-title">Pre-meeting briefing — ROI win, support backlog, exec alignment</div>
+                    <div class="recent-snippet">Internal prep. ROI 63→90, NPS dropped 77→57, engagement Red. Drafted by Sam Buddery from scorecard, CTAs, success plans.</div>
+                  </div>
+                  <span class="recent-source meeting">Meeting</span>
+                </div>
+                <div class="recent-item">
+                  <div class="recent-when">Mar 26 · 5w</div>
+                  <div class="recent-info">
+                    <div class="recent-title">Thank You for Renewing!</div>
+                    <div class="recent-snippet">Email sent by Tara Boyette to renewal sponsor — positive close.</div>
+                  </div>
+                  <span class="recent-source email">Email</span>
+                </div>
+                <div class="recent-item">
+                  <div class="recent-when">Nov 10 · last scored</div>
+                  <div class="recent-info">
+                    <div class="recent-title">CSM Sentiment 76 — “looking strong for expansion”</div>
+                    <div class="recent-snippet">Allison's leadership loved the ROI presentation from Hooli; her sentiment is positive on expansion at renewal.</div>
+                  </div>
+                  <span class="recent-source scorecard">Scorecard</span>
+                </div>
+                <div class="recent-item">
+                  <div class="recent-when">Jun 16 · stale</div>
+                  <div class="recent-info">
+                    <div class="recent-title">Support Experience scored Red 50</div>
+                    <div class="recent-snippet">Aria Bennett: "Support CSAT Poor, Over 10 Support Tickets Open." Has not been re-scored since.</div>
+                  </div>
+                  <span class="recent-source support">Support</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="main-right">
+
+          <!-- STAKEHOLDERS -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Stakeholders <span class="count">7</span></div>
+              <div class="panel-actions">
+                <div class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div>
+              </div>
+            </div>
+            <div class="stakeholders">
+              <div class="stk-row">
+                <div class="stk-avatar" style="background: linear-gradient(135deg,#7c3aed,#5b21b6);">AC</div>
+                <div class="stk-info">
+                  <div class="stk-name">Allison Chen</div>
+                  <div class="stk-role">VP Engineering · Exec Sponsor</div>
+                </div>
+                <div class="stk-meta">
+                  <span class="stk-tier exec">Exec</span>
+                  <span class="stk-last">last touch 4d</span>
+                </div>
+              </div>
+              <div class="stk-row">
+                <div class="stk-avatar" style="background: linear-gradient(135deg,#10b981,#059669);">TB</div>
+                <div class="stk-info">
+                  <div class="stk-name">Tara Boyette</div>
+                  <div class="stk-role">Director, IT Ops · Day-to-day champion</div>
+                </div>
+                <div class="stk-meta">
+                  <span class="stk-tier lost">Silent</span>
+                  <span class="stk-last crit">31 days</span>
+                </div>
+              </div>
+              <div class="stk-row">
+                <div class="stk-avatar" style="background: linear-gradient(135deg,#f59e0b,#d97706);">AS</div>
+                <div class="stk-info">
+                  <div class="stk-name">Ashutosh Singh</div>
+                  <div class="stk-role">Implementation Lead</div>
+                </div>
+                <div class="stk-meta">
+                  <span class="stk-tier user">User</span>
+                  <span class="stk-last">last touch 11d</span>
+                </div>
+              </div>
+              <div class="stk-row">
+                <div class="stk-avatar" style="background: linear-gradient(135deg,#06b6d4,#0e7490);">CC</div>
+                <div class="stk-info">
+                  <div class="stk-name">Cooper Coleman</div>
+                  <div class="stk-role">Procurement · Renewal owner</div>
+                </div>
+                <div class="stk-meta">
+                  <span class="stk-tier user">Buyer</span>
+                  <span class="stk-last">last touch 2w</span>
+                </div>
+              </div>
+              <div class="stk-row">
+                <div class="stk-avatar" style="background: linear-gradient(135deg,#dc2626,#991b1b);">AB</div>
+                <div class="stk-info">
+                  <div class="stk-name">Aria Bennett</div>
+                  <div class="stk-role">IT Support Lead · Logging tickets</div>
+                </div>
+                <div class="stk-meta">
+                  <span class="stk-tier champ">Advocate</span>
+                  <span class="stk-last crit">tickets +10</span>
+                </div>
+              </div>
+              <div class="stk-row">
+                <div class="stk-avatar" style="background: linear-gradient(135deg,#ec4899,#be185d);">MD</div>
+                <div class="stk-info">
+                  <div class="stk-name">Maya Desai</div>
+                  <div class="stk-role">Workflow power user</div>
+                </div>
+                <div class="stk-meta">
+                  <span class="stk-tier champ">Champ</span>
+                  <span class="stk-last">last touch 6d</span>
+                </div>
+              </div>
+              <div class="stk-row">
+                <div class="stk-avatar" style="background: linear-gradient(135deg,#64748b,#334155);">JK</div>
+                <div class="stk-info">
+                  <div class="stk-name">James Kim</div>
+                  <div class="stk-role">CIO · Was sponsor (changed Q1)</div>
+                </div>
+                <div class="stk-meta">
+                  <span class="stk-tier lost">Lost</span>
+                  <span class="stk-last">left role</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- OPEN CTAs -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Open CTAs <span class="count">42</span></div>
+              <div class="panel-actions">
+                <div class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg></div>
+              </div>
+            </div>
+            <div class="ctas">
+              <div class="cta-row">
+                <div class="cta-bar high"></div>
+                <div class="cta-info">
+                  <div class="cta-name">Re-engage day-to-day champion (weekly working session)</div>
+                  <div class="cta-meta"><span class="reason">Sentiment Risk</span> · Sally McField · Objective</div>
+                </div>
+                <div class="cta-due warn">May 13<br>12d</div>
+              </div>
+              <div class="cta-row">
+                <div class="cta-bar high"></div>
+                <div class="cta-info">
+                  <div class="cta-name">Define renewal success criteria with Slack leadership</div>
+                  <div class="cta-meta"><span class="reason">Renewal</span> · Sally McField · Objective</div>
+                </div>
+                <div class="cta-due warn">May 22<br>21d</div>
+              </div>
+              <div class="cta-row">
+                <div class="cta-bar high"></div>
+                <div class="cta-info">
+                  <div class="cta-name">Lock Partner Pilot enhancement scope &amp; delivery</div>
+                  <div class="cta-meta"><span class="reason">Roadmap Risk</span> · Sally McField · Objective</div>
+                </div>
+                <div class="cta-due warn">May 29<br>28d</div>
+              </div>
+              <div class="cta-row">
+                <div class="cta-bar med"></div>
+                <div class="cta-info">
+                  <div class="cta-name">4-Tier Activation Framework</div>
+                  <div class="cta-meta"><span class="reason">Renewal</span> · Hussain Shaikh · Risk</div>
+                </div>
+                <div class="cta-due warn">May 13<br>12d</div>
+              </div>
+              <div class="cta-row">
+                <div class="cta-bar med"></div>
+                <div class="cta-info">
+                  <div class="cta-name">CEO Outreach</div>
+                  <div class="cta-meta"><span class="reason">Onboarding</span> · Sally McField · Activity</div>
+                </div>
+                <div class="cta-due urgent">Apr 24<br>past 7d</div>
+              </div>
+              <div class="cta-row">
+                <div class="cta-bar med"></div>
+                <div class="cta-info">
+                  <div class="cta-name">Cross-Sell: Consumption Threshold</div>
+                  <div class="cta-meta"><span class="reason">Other</span> · Cooper Consumption · Consumption</div>
+                </div>
+                <div class="cta-due urgent">Nov 5 '25<br>past 6mo</div>
+              </div>
+              <div class="cta-row">
+                <div class="cta-bar low"></div>
+                <div class="cta-info">
+                  <div class="cta-name">Introduce to other successful customers</div>
+                  <div class="cta-meta"><span class="reason">Upsell Opportunity</span> · Ashutosh · Activity</div>
+                </div>
+                <div class="cta-due">Mar 31<br>past 31d</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTRACT & RENEWAL -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Contract & Renewal</div>
+              <div class="panel-actions">
+                <div class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
+              </div>
+            </div>
+            <div class="contract">
+              <div class="contract-row"><span class="label">Original</span><span class="val">03 Aug 2024</span></div>
+              <div class="contract-row"><span class="label">Renewal Due</span><span class="val crit">24 Mar 2026 · 35d past</span></div>
+              <div class="contract-row"><span class="label">ARR</span><span class="val">$58,400</span></div>
+              <div class="contract-row"><span class="label">MRR</span><span class="val">$4,033</span></div>
+              <div class="contract-row"><span class="label">Tier</span><span class="val">Enterprise · 155 seats</span></div>
+              <div class="contract-row"><span class="label">Stage</span><span class="val warn">5. Renewal · in negotiation</span></div>
+              <div class="contract-row"><span class="label">Cross-sell</span><span class="val">Consumption Threshold (open)</span></div>
+              <div class="contract-row"><span class="label">Last quote</span><span class="val">Mar 26 — "Thank You for Renewing" email</span></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- =========== ACTIVITY FEED =========== -->
+      <section class="activity">
+        <div class="activity-tabs">
+          <div class="activity-tab active">All <span class="pip">98</span></div>
+          <div class="activity-tab">Meetings <span class="pip">12</span></div>
+          <div class="activity-tab">Emails <span class="pip">34</span></div>
+          <div class="activity-tab">CTAs <span class="pip">42</span></div>
+          <div class="activity-tab">Updates <span class="pip">10</span></div>
+        </div>
+        <div class="activity-feed">
+
+          <div class="feed-item">
+            <div class="feed-icon meeting">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <div class="feed-body">
+              <div class="feed-head">
+                <div class="feed-subject">Pre-meeting briefing — agenda, ROI win, action items</div>
+                <div class="feed-when">Apr 27 · 4d</div>
+              </div>
+              <div class="feed-author">Meeting prep · by <span class="name">Sam Buddery</span></div>
+              <div class="feed-content">
+                Slack Health snapshot: <em class="tag">Overall 66 Yellow</em>, flat for 12+ weeks. Outcomes Health <em class="tag">70 ↑</em>, Experience Health <em class="tag">63 →</em>, Community &amp; Education <em class="crit">63 ↓</em>.<br><br>
+                <strong>ROI win to lead with:</strong> ROI score jumped <em class="tag">63 → 90</em>. Allison's leadership team gave strong positive feedback — CSM sentiment <em class="tag">76 Green</em>: "looking strong for expansion with their renewal." Deployment is complete with post-implementation CSAT 8/10.<br><br>
+                <strong>Risks to surface:</strong> Engagement <em class="crit">Red 48</em> — adoption champion not contacted in &gt;30 days. Support Experience <em class="crit">Red 50</em> — poor CSAT, &gt;10 tickets open. NPS dropped <em class="crit">77 → 57</em>. Onboarding objectives still carry 30+ overdue tasks. Open risk CTAs: Delayed Onboarding, No touchpoint in 90 days, Account Gone Dark, Exec Sponsor Change.
+              </div>
+            </div>
+          </div>
+
+          <div class="feed-item">
+            <div class="feed-icon email">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>
+            </div>
+            <div class="feed-body">
+              <div class="feed-head">
+                <div class="feed-subject">Thank You for Renewing!</div>
+                <div class="feed-when">Mar 26 · 5w</div>
+              </div>
+              <div class="feed-author">Email · by <span class="name">Tara Boyette</span></div>
+              <div class="feed-content">
+                Email sent to Slack renewal sponsor confirming successful renewal close. 1 recipient.
+              </div>
+            </div>
+          </div>
+
+          <div class="feed-item">
+            <div class="feed-icon cta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg>
+            </div>
+            <div class="feed-body">
+              <div class="feed-head">
+                <div class="feed-subject">CTA opened: Re-engage day-to-day champion (weekly working session)</div>
+                <div class="feed-when">Apr 27 · 4d</div>
+              </div>
+              <div class="feed-author">Sentiment Risk · <span class="name">Sally McField</span></div>
+              <div class="feed-content">
+                Triggered after engagement scorecard dropped to <em class="crit">Red 48</em>. Tara Boyette has been silent &gt;30 days. Plan: weekly working session, due May 13.
+              </div>
+            </div>
+          </div>
+
+          <div class="feed-item">
+            <div class="feed-icon update">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l1.5 5L19 8.5 13.5 10 12 15l-1.5-5L5 8.5 10.5 7z"/></svg>
+            </div>
+            <div class="feed-body">
+              <div class="feed-head">
+                <div class="feed-subject">Scorecard refresh — ROI 63 → 90 (Yellow → Green)</div>
+                <div class="feed-when">Nov 10 · last refresh</div>
+              </div>
+              <div class="feed-author">Update · <span class="name">System Administrator</span></div>
+              <div class="feed-content">
+                ROI measure recalculated: Success Plan active with outcomes in progress, only 1 overdue. Aggregate measures show this customer is realising significant value.
+              </div>
+            </div>
+          </div>
+
+          <div class="feed-item">
+            <div class="feed-icon update">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l1.5 5L19 8.5 13.5 10 12 15l-1.5-5L5 8.5 10.5 7z"/></svg>
+            </div>
+            <div class="feed-body">
+              <div class="feed-head">
+                <div class="feed-subject">CSM Sentiment — Allison's leadership signalled expansion</div>
+                <div class="feed-when">Nov 10 · last refresh</div>
+              </div>
+              <div class="feed-author">Update · <span class="name">System Administrator</span></div>
+              <div class="feed-content">
+                "Had a call with Allison today. Her leadership loved the presentation regarding the ROI they have received from Hooli in the last year. Her sentiment is that we are <em class="tag">looking strong for expansion</em> with their renewal."
+              </div>
+            </div>
+          </div>
+
+          <div class="feed-item">
+            <div class="feed-icon update">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+            </div>
+            <div class="feed-body">
+              <div class="feed-head">
+                <div class="feed-subject">Support Experience — scored Red 50, &gt;10 tickets open</div>
+                <div class="feed-when">Jun 16 · stale</div>
+              </div>
+              <div class="feed-author">Support escalation · <span class="name">Aria Bennett</span></div>
+              <div class="feed-content">
+                "Support CSAT Poor, Over 10 Support Tickets Open." Has been the dominant Red flag on this account for &gt;10 months. Has not been re-scored — measure is now stale.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+</body>
+</html>
