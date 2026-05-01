@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scorecard — Essentials Health · Slack · Gainsight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@300;400;500;600&family=Inter+Tight:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafaf7;
+    --bg-1: #ffffff;
+    --bg-2: #f4f4ef;
+    --bg-3: #ececdf;
+    --line: #e4e4dc;
+    --line-soft: #ededE5;
+    --text: #0c0c0d;
+    --text-1: #3d3d42;
+    --text-2: #6b6b71;
+    --text-3: #9a9aA0;
+    --accent-2: #4f46e5;
+    --lime: #c8f000;
+    --green: #16a34a;
+    --green-soft: #dcfce7;
+    --green-tint: #e8fbef;
+    --amber: #d97706;
+    --amber-soft: #fef3c7;
+    --amber-tint: #fdf6dd;
+    --red: #dc2626;
+    --red-soft: #fee2e2;
+    --red-tint: #fceeed;
+    --blue: #2563eb;
+    --blue-soft: #dbeafe;
+    --purple: #7c3aed;
+    --purple-soft: #ede9fe;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+
+    --font-display: "Fraunces", Georgia, serif;
+    --font-sans: "Inter Tight", -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", "SF Mono", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 100; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.025 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* APP SHELL */
+  .app { display: grid; grid-template-columns: 56px 1fr; min-height: 100vh; }
+  .rail {
+    background: var(--bg); border-right: 1px solid var(--line);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 14px 0; gap: 4px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .rail-logo {
+    width: 32px; height: 32px; background: var(--text);
+    border-radius: 8px; display: grid; place-items: center;
+    font-family: var(--font-display); font-weight: 700; color: var(--lime);
+    font-size: 18px; margin-bottom: 14px; box-shadow: var(--shadow);
+  }
+  .rail-btn {
+    width: 36px; height: 36px; display: grid; place-items: center;
+    border-radius: 8px; color: var(--text-2); cursor: pointer;
+    transition: all 0.15s; position: relative;
+  }
+  .rail-btn:hover { background: var(--bg-2); color: var(--text); }
+  .rail-btn.active { background: var(--bg-3); color: var(--text); }
+  .rail-btn.active::before {
+    content: ""; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+    width: 2px; height: 18px; background: var(--text); border-radius: 2px;
+  }
+  .rail-btn svg { width: 18px; height: 18px; }
+  .rail-spacer { flex: 1; }
+  .rail-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    display: grid; place-items: center;
+    font-weight: 600; font-size: 11px; color: #fff;
+    border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--line);
+  }
+
+  .main { display: flex; flex-direction: column; min-width: 0; }
+  .topbar {
+    height: 52px; border-bottom: 1px solid var(--line); background: var(--bg);
+    display: flex; align-items: center; padding: 0 18px; gap: 14px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px 6px 8px;
+    background: var(--bg-1); border: 1px solid var(--line); border-radius: 8px;
+    font-size: 12px; color: var(--text); cursor: pointer; text-decoration: none;
+    box-shadow: var(--shadow-sm);
+  }
+  .back-btn:hover { border-color: var(--text-3); }
+  .back-btn svg { width: 14px; height: 14px; }
+  .crumbs {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-2);
+    letter-spacing: 0.02em; text-transform: uppercase;
+  }
+  .crumbs .sep { color: var(--text-3); }
+  .crumbs .current { color: var(--text); }
+  .topbar-spacer { flex: 1; }
+  .mcp-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 7px; background: rgba(200, 240, 0, 0.4);
+    border: 1px solid var(--lime); border-radius: 4px;
+    font-size: 9px; font-family: var(--font-mono); color: var(--text); font-weight: 600;
+  }
+  .live-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+    box-shadow: 0 0 8px rgba(22,163,74,0.5);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { opacity: 0.4; } }
+
+  /* CANVAS */
+  .canvas { padding: 18px; display: flex; flex-direction: column; gap: 14px; max-width: 1600px; }
+
+  /* PAGE HEADER + view toggle */
+  .page-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px;
+  }
+  .page-title {
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  .page-title h1 {
+    font-family: var(--font-display);
+    font-size: 28px; font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .page-title .scorecard-name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-2);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .page-title .scorecard-name .val { color: var(--text); font-weight: 500; }
+  .view-toggle {
+    display: flex;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 3px;
+    box-shadow: var(--shadow-sm);
+  }
+  .view-btn {
+    padding: 6px 12px;
+    border-radius: 5px;
+    background: transparent;
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .view-btn:hover { color: var(--text); }
+  .view-btn.active {
+    background: var(--text);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+  .view-btn svg { width: 12px; height: 12px; }
+  .page-actions { display: flex; gap: 6px; align-items: center; }
+  .btn-icon {
+    width: 32px; height: 32px;
+    display: grid; place-items: center;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    cursor: pointer;
+    color: var(--text-2);
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-icon:hover { color: var(--text); border-color: var(--text-3); }
+  .btn-icon svg { width: 14px; height: 14px; }
+
+  /* AI VERDICT — the headline */
+  .verdict {
+    background: linear-gradient(135deg, #1a1a1f 0%, #0c0c0d 100%);
+    border: 1px solid var(--text);
+    border-radius: 14px;
+    padding: 18px 22px;
+    color: #fff;
+    box-shadow: var(--shadow-lg);
+    position: relative; overflow: hidden;
+  }
+  .verdict::after {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--lime), transparent);
+  }
+  .verdict::before {
+    content: ""; position: absolute; top: -50px; right: -50px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(200,240,0,0.12), transparent 70%);
+    pointer-events: none;
+  }
+  .verdict-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 9px; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--lime); font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .verdict-tag .pulse {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--lime);
+    box-shadow: 0 0 8px var(--lime);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  .verdict-text {
+    font-family: var(--font-display);
+    font-size: 19px; font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+  .verdict-text strong { color: #fff; font-weight: 500; }
+  .verdict-text em.lime { color: var(--lime); font-style: italic; }
+  .verdict-text em.crit { color: #fca5a5; font-style: normal; font-weight: 500; }
+  .verdict-text em.pos { color: #86efac; font-style: normal; font-weight: 500; }
+  .verdict-meta {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; gap: 18px; flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 10px; color: rgba(255,255,255,0.55);
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .verdict-meta .stat strong { color: rgba(255,255,255,0.95); font-weight: 500; }
+  .verdict-meta .crit { color: #fca5a5; }
+  .verdict-meta .warn { color: #fcd34d; }
+
+  /* HEADER STRIP — overall score + history + meta */
+  .scorecard-header {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .overall-score {
+    padding: 22px;
+    border-right: 1px solid var(--line);
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .overall-label {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 0.1em;
+    color: var(--text-2); text-transform: uppercase;
+    font-weight: 500;
+  }
+  .overall-display {
+    display: flex; align-items: center; gap: 18px;
+  }
+  .overall-ring {
+    width: 92px; height: 92px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .overall-ring svg { transform: rotate(-90deg); }
+  .overall-ring circle { fill: none; }
+  .overall-ring .bg-c { stroke: var(--bg-3); stroke-width: 8; }
+  .overall-ring .fg-c { stroke-width: 8; stroke-linecap: round; }
+  .overall-ring-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .overall-ring-text .num {
+    font-family: var(--font-display);
+    font-size: 32px; font-weight: 500;
+    line-height: 1; letter-spacing: -0.02em;
+  }
+  .overall-ring-text .lbl {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+  .overall-info { flex: 1; min-width: 0; }
+  .overall-band {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 8px; border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .overall-band.amber { background: var(--amber-soft); color: var(--amber); }
+  .overall-band.green { background: var(--green-soft); color: var(--green); }
+  .overall-band.red { background: var(--red-soft); color: var(--red); }
+  .overall-band::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: currentColor;
+  }
+  .overall-trend {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-1);
+    line-height: 1.5;
+  }
+  .overall-trend .crit { color: var(--red); font-weight: 500; }
+  .overall-trend .warn { color: var(--amber); font-weight: 500; }
+  .overall-trend .ok { color: var(--green); font-weight: 500; }
+  .overall-staleness {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .stale-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 6px;
+    background: var(--amber-soft);
+    color: var(--amber);
+    border-radius: 3px;
+    font-weight: 600;
+  }
+  .stale-badge::before {
+    content: ""; width: 4px; height: 4px; border-radius: 50%; background: currentColor;
+  }
+
+  /* HISTORY CHART — diagnostic, with annotations */
+  .history-chart {
+    padding: 22px;
+    position: relative;
+  }
+  .history-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .history-title {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 0.1em;
+    color: var(--text-1); text-transform: uppercase;
+    font-weight: 500;
+  }
+  .history-legend {
+    display: flex; gap: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .history-legend .item {
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .history-legend .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .history-legend .anno {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--bg-1);
+    border: 2px solid var(--accent-2);
+  }
+  .history-svg-wrap {
+    position: relative;
+    height: 160px;
+    width: 100%;
+  }
+  .history-svg-wrap svg {
+    width: 100%; height: 100%;
+    overflow: visible;
+  }
+  .history-y-band {
+    fill-opacity: 0.5;
+  }
+  .history-y-band.green { fill: var(--green-tint); }
+  .history-y-band.amber { fill: var(--amber-tint); }
+  .history-y-band.red { fill: var(--red-tint); }
+  .history-y-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    fill: var(--text-3);
+    letter-spacing: 0.05em;
+  }
+  .history-line {
+    fill: none;
+    stroke: var(--text);
+    stroke-width: 2;
+  }
+  .history-area {
+    fill: rgba(0,0,0,0.05);
+  }
+  .history-dot {
+    fill: var(--bg-1);
+    stroke: var(--text);
+    stroke-width: 2;
+  }
+  .history-anno-line {
+    stroke: var(--accent-2);
+    stroke-width: 1;
+    stroke-dasharray: 2 2;
+  }
+  .history-anno-dot {
+    fill: var(--accent-2);
+    stroke: var(--bg-1);
+    stroke-width: 2;
+  }
+  .history-x-axis {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    letter-spacing: 0.04em;
+  }
+  .history-annotations {
+    display: flex; flex-direction: column;
+    gap: 6px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .anno-item {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 12px;
+    align-items: baseline;
+    font-size: 12px;
+  }
+  .anno-when {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .anno-text {
+    color: var(--text-1);
+    line-height: 1.4;
+  }
+  .anno-text strong { color: var(--text); font-weight: 600; }
+  .anno-text .pos { color: var(--green); font-weight: 500; }
+  .anno-text .neg { color: var(--red); font-weight: 500; }
+
+  /* GROUP CARDS — the main improvement */
+  .groups-stack { display: flex; flex-direction: column; gap: 14px; }
+  .group-card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .group-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 18px;
+    align-items: center;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--line-soft);
+    background: var(--bg-1);
+  }
+  .group-ring {
+    width: 56px; height: 56px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .group-ring svg { transform: rotate(-90deg); }
+  .group-ring circle { fill: none; }
+  .group-ring .bg-c { stroke: var(--bg-3); stroke-width: 5; }
+  .group-ring .fg-c { stroke-width: 5; stroke-linecap: round; }
+  .group-ring-text {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .group-info { min-width: 0; }
+  .group-name {
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .group-meta {
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .group-meta .sep { color: var(--text-3); }
+  .group-meta .val { color: var(--text-1); font-weight: 500; }
+  .group-meta .ok { color: var(--green); font-weight: 600; }
+  .group-meta .warn { color: var(--amber); font-weight: 600; }
+  .group-meta .crit { color: var(--red); font-weight: 600; }
+  .group-trend-mini { display: inline-flex; gap: 2px; align-items: end; height: 18px; }
+  .group-trend-mini > div {
+    width: 3px; border-radius: 1px;
+  }
+
+  /* WEIGHTED CONTRIBUTION BAR */
+  .group-bar {
+    padding: 14px 22px;
+    background: var(--bg-2);
+  }
+  .group-bar-label {
+    font-family: var(--font-mono);
+    font-size: 9px; letter-spacing: 0.08em;
+    color: var(--text-2); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .stacked-bar {
+    display: flex;
+    height: 24px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg-3);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .stacked-bar-seg {
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    transition: opacity 0.15s;
+    cursor: pointer;
+    position: relative;
+  }
+  .stacked-bar-seg:hover { opacity: 0.85; }
+  .stacked-bar-seg.green { background: var(--green); }
+  .stacked-bar-seg.amber { background: var(--amber); }
+  .stacked-bar-seg.red { background: var(--red); }
+  .stacked-bar-key {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .stacked-bar-key .item {
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .stacked-bar-key .swatch {
+    width: 8px; height: 8px; border-radius: 2px;
+  }
+  .stacked-bar-key .swatch.green { background: var(--green); }
+  .stacked-bar-key .swatch.amber { background: var(--amber); }
+  .stacked-bar-key .swatch.red { background: var(--red); }
+
+  /* MEASURES inside a group */
+  .measures {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--line-soft);
+  }
+  .measure {
+    background: var(--bg-1);
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: background 0.1s;
+    display: flex; flex-direction: column; gap: 6px;
+    position: relative;
+  }
+  .measure:hover { background: var(--bg-2); }
+  .measure.is-driver {
+    background: linear-gradient(90deg, rgba(220,38,38,0.04), transparent 40%);
+    box-shadow: inset 3px 0 0 var(--red);
+  }
+  .measure.is-win {
+    background: linear-gradient(90deg, rgba(22,163,74,0.05), transparent 40%);
+    box-shadow: inset 3px 0 0 var(--green);
+  }
+  .measure-head {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .measure-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .measure-pill.green { background: var(--green); }
+  .measure-pill.amber { background: var(--amber); }
+  .measure-pill.red { background: var(--red); }
+  .measure-pill .arrow {
+    font-size: 9px;
+  }
+  .measure-name {
+    font-size: 13px;
+    font-weight: 600;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .measure-tags {
+    display: inline-flex; align-items: center; gap: 5px;
+    flex-shrink: 0;
+  }
+  .measure-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+  .measure-tag.weight {
+    background: var(--bg-2);
+    color: var(--text-1);
+    border: 1px solid var(--line);
+  }
+  .measure-tag.driver {
+    background: var(--red-soft);
+    color: var(--red);
+  }
+  .measure-tag.win {
+    background: var(--green-soft);
+    color: var(--green);
+  }
+  .measure-tag.stale {
+    background: var(--amber-soft);
+    color: var(--amber);
+  }
+  .measure-prev {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .measure-prev .arrow.up { color: var(--green); }
+  .measure-prev .arrow.down { color: var(--red); }
+  .measure-prev .arrow.flat { color: var(--text-3); }
+  .measure-comment {
+    font-size: 12px;
+    color: var(--text-1);
+    line-height: 1.45;
+    padding-left: 0;
+    border-left: 0;
+  }
+  .measure-comment .by {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: block;
+    margin-top: 4px;
+  }
+  .measure-foot {
+    display: flex; gap: 12px; align-items: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .measure-foot .sep { color: var(--text-3); }
+  .measure-foot .input { color: var(--text-1); }
+
+  /* List view — alternative */
+  .list-view {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: none;
+  }
+  body.view-list .groups-stack { display: none; }
+  body.view-list .list-view { display: block; }
+
+  table.measures-table {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+  }
+  .measures-table thead th {
+    background: var(--bg-2);
+    text-align: left;
+    padding: 10px 14px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    font-weight: 500;
+    border-bottom: 1px solid var(--line);
+  }
+  .measures-table tbody tr {
+    border-bottom: 1px solid var(--line-soft);
+    cursor: pointer;
+  }
+  .measures-table tbody tr:hover { background: var(--bg-2); }
+  .measures-table tbody tr:last-child { border-bottom: none; }
+  .measures-table tbody tr.group-row {
+    background: var(--bg-2);
+    font-weight: 600;
+  }
+  .measures-table tbody tr.group-row:hover { background: var(--bg-3); }
+  .measures-table td {
+    padding: 11px 14px;
+    vertical-align: middle;
+  }
+  .measures-table td.score-cell {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    width: 80px;
+  }
+  .measures-table td.score-cell .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 8px; border-radius: 5px; color: #fff;
+  }
+  .measures-table td.score-cell .pill.green { background: var(--green); }
+  .measures-table td.score-cell .pill.amber { background: var(--amber); }
+  .measures-table td.score-cell .pill.red { background: var(--red); }
+  .measures-table td.weight-cell {
+    font-family: var(--font-mono);
+    color: var(--text-2);
+    width: 80px;
+    text-align: right;
+  }
+  .measures-table td.trend-cell {
+    width: 80px;
+    text-align: center;
+    font-family: var(--font-mono);
+  }
+  .measures-table td.comment-cell {
+    color: var(--text-1);
+    font-size: 12px;
+    max-width: 360px;
+  }
+  .measures-table td.modified-cell {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    width: 130px;
+    text-align: right;
+  }
+  .measures-table td.modified-cell .stale {
+    color: var(--amber);
+    font-weight: 600;
+  }
+
+  /* DETAIL DRAWER */
+  .drawer-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.3);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 200;
+  }
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: 480px; max-width: 100vw;
+    background: var(--bg);
+    border-left: 1px solid var(--line);
+    box-shadow: -4px 0 24px rgba(0,0,0,0.08);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 201;
+    display: flex; flex-direction: column;
+  }
+  body.drawer-open .drawer-overlay { opacity: 1; pointer-events: auto; }
+  body.drawer-open .drawer { transform: translateX(0); }
+  .drawer-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg-1);
+  }
+  .drawer-title-wrap { min-width: 0; }
+  .drawer-title {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .drawer-sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+  .drawer-close {
+    width: 32px; height: 32px;
+    display: grid; place-items: center;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    cursor: pointer;
+    color: var(--text-2);
+    flex-shrink: 0;
+  }
+  .drawer-close:hover { color: var(--text); border-color: var(--text-3); background: var(--bg-2); }
+  .drawer-close svg { width: 14px; height: 14px; }
+  .drawer-body {
+    padding: 18px 20px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .drawer-section-title {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-2);
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .drawer-score-display {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  .drawer-score-num {
+    font-family: var(--font-display);
+    font-size: 36px; font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .drawer-score-num.green { color: var(--green); }
+  .drawer-score-num.amber { color: var(--amber); }
+  .drawer-score-num.red { color: var(--red); }
+  .drawer-score-meta { flex: 1; min-width: 0; font-size: 12px; line-height: 1.5; }
+  .drawer-score-meta strong { font-weight: 600; }
+  .drawer-trend-line {
+    height: 80px; width: 100%;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+    position: relative;
+  }
+  .drawer-comments {
+    padding: 14px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-1);
+  }
+  .drawer-comments .by {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 8px;
+    display: block;
+  }
+  .drawer-action {
+    padding: 14px;
+    background: linear-gradient(135deg, rgba(200,240,0,0.18), rgba(200,240,0,0.04));
+    border: 1px solid var(--lime);
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .drawer-action .label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-1);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    font-weight: 600;
+    display: block;
+  }
+  .drawer-action strong { font-weight: 600; }
+  .drawer-action .actions {
+    display: flex; gap: 6px;
+    margin-top: 10px;
+  }
+  .drawer-btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--text);
+    color: #fff;
+    border: 1px solid var(--text);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .drawer-btn:hover { background: #1a1a1f; }
+  .drawer-btn.ghost {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--line);
+  }
+  .drawer-btn.ghost:hover { background: var(--bg-2); border-color: var(--text-3); }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    .scorecard-header { grid-template-columns: 1fr; }
+    .overall-score { border-right: none; border-bottom: 1px solid var(--line); }
+    .measures { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 700px) {
+    .app { grid-template-columns: 1fr; }
+    .rail { display: none; }
+    .canvas { padding: 12px; gap: 12px; }
+    .page-head { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .page-title h1 { font-size: 22px; }
+    .verdict-text { font-size: 16px; }
+    .group-head { grid-template-columns: auto 1fr; padding: 14px; }
+    .group-head .group-trend-mini { grid-column: 1 / -1; }
+    .drawer { width: 100%; }
+    .anno-item { grid-template-columns: 1fr; gap: 0; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .canvas > * { animation: fadeUp 0.5s ease both; }
+  .canvas > *:nth-child(2) { animation-delay: 0.05s; }
+  .canvas > *:nth-child(3) { animation-delay: 0.1s; }
+  .canvas > *:nth-child(4) { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="rail">
+    <div class="rail-logo">G</div>
+    <div class="rail-btn" title="Home" onclick="window.location.href='index.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 4l9 8M5 10v10h14V10"/></svg>
+    </div>
+    <div class="rail-btn active" title="Portfolio" onclick="window.location.href='c360.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    </div>
+    <div class="rail-btn" title="Cockpit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    </div>
+    <div class="rail-btn" title="Insights">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 2 6-7"/></svg>
+    </div>
+    <div class="rail-spacer"></div>
+    <div class="rail-avatar" title="Sam Buddery">SB</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <a class="back-btn" href="c360.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Slack
+      </a>
+      <div class="crumbs">
+        <span>Slack</span>
+        <span class="sep">/</span>
+        <span class="current">Scorecard</span>
+      </div>
+      <div class="topbar-spacer"></div>
+      <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-2); display: inline-flex; align-items: center; gap: 6px;">
+        <span class="live-dot"></span>Live
+      </span>
+      <span class="mcp-pill">⚡ MCP · Gainsight</span>
+    </header>
+
+    <div class="canvas">
+
+      <!-- PAGE HEAD -->
+      <section class="page-head">
+        <div class="page-title">
+          <h1>Scorecard</h1>
+          <span class="scorecard-name"><span class="val">Essentials Health</span> · 12 measures · 3 groups</span>
+        </div>
+        <div class="page-actions">
+          <div class="view-toggle" role="tablist">
+            <button class="view-btn active" data-view="cards">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              Cards
+            </button>
+            <button class="view-btn" data-view="list">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              List
+            </button>
+          </div>
+          <button class="btn-icon" title="Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 008 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H2a2 2 0 110-4h.09A1.65 1.65 0 004.6 8a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V2a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H22a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- AI VERDICT — the headline read -->
+      <section class="verdict">
+        <div class="verdict-tag"><span class="pulse"></span>AI Read · synthesized from 12 measures + 15-week history</div>
+        <div class="verdict-text">
+          Slack's overall score has been <strong>completely flat at 66 (Yellow) for 15 weeks</strong> — but underneath, the picture is bipolar. <em class="pos">ROI jumped 63 → 90</em> after Allison's leadership signed off on the Hooli ROI presentation, and <em class="pos">Deployment crossed into Green</em>. Yet the score won't climb because <em class="crit">Engagement collapsed to Red 48</em> — the adoption champion has been silent for 30+ days — and Support Experience has sat at <em class="crit">Red 50 since June 2025, never re-scored</em>. Move Engagement back to Yellow, refresh Support, and Slack tips into Green.
+        </div>
+        <div class="verdict-meta">
+          <span class="stat">Top driver: <strong class="crit">Engagement (−13 points YoY)</strong></span>
+          <span class="stat">Top win: <strong>ROI (+27 points)</strong></span>
+          <span class="stat">Stale measures: <strong class="warn">12 of 12</strong></span>
+          <span class="stat">Last refresh: <strong>10 Nov 2025 (172 days ago)</strong></span>
+        </div>
+      </section>
+
+      <!-- HEADER STRIP — overall score + diagnostic history -->
+      <section class="scorecard-header">
+
+        <!-- Overall score block -->
+        <div class="overall-score">
+          <div class="overall-label">Overall Score</div>
+          <div class="overall-display">
+            <div class="overall-ring">
+              <svg viewBox="0 0 92 92">
+                <circle class="bg-c" cx="46" cy="46" r="38"/>
+                <!-- 66/100 = 66% of circumference 238.76 = 157.6 fill, 81.16 gap -->
+                <circle class="fg-c" cx="46" cy="46" r="38" stroke="#d97706"
+                        stroke-dasharray="157.6 238.76" stroke-dashoffset="0"/>
+              </svg>
+              <div class="overall-ring-text">
+                <div class="num">66</div>
+                <div class="lbl">Yellow</div>
+              </div>
+            </div>
+            <div class="overall-info">
+              <span class="overall-band amber">Yellow · band 50–70</span>
+              <div class="overall-trend">
+                <span class="warn">Flat for 15 weeks</span>. Was Yellow → moved up to <span class="ok">Green for 1 week</span> in late January, then settled back into Yellow.
+              </div>
+            </div>
+          </div>
+          <div class="overall-staleness">
+            Last scored 10 Nov 2025 · <span class="stale-badge">172 days stale</span>
+          </div>
+        </div>
+
+        <!-- Diagnostic history chart -->
+        <div class="history-chart">
+          <div class="history-head">
+            <div class="history-title">15-week trend · with annotations</div>
+            <div class="history-legend">
+              <span class="item"><span class="anno"></span>Event</span>
+              <span class="item"><span class="dot" style="background:var(--green);"></span>Green</span>
+              <span class="item"><span class="dot" style="background:var(--amber);"></span>Yellow</span>
+              <span class="item"><span class="dot" style="background:var(--red);"></span>Red</span>
+            </div>
+          </div>
+
+          <div class="history-svg-wrap">
+            <svg viewBox="0 0 700 160" preserveAspectRatio="none">
+              <!-- Y-axis bands: 0-50 red, 50-70 amber, 70-100 green
+                   Y mapping: 0 score = 160px, 100 score = 0px -->
+              <rect class="history-y-band red" x="0" y="80" width="700" height="80"/>     <!-- 0-50 -->
+              <rect class="history-y-band amber" x="0" y="48" width="700" height="32"/>   <!-- 50-70 -->
+              <rect class="history-y-band green" x="0" y="0" width="700" height="48"/>    <!-- 70-100 -->
+
+              <!-- Y-axis labels -->
+              <text class="history-y-label" x="2" y="44" dominant-baseline="hanging">70 GREEN</text>
+              <text class="history-y-label" x="2" y="76" dominant-baseline="hanging">50 YELLOW</text>
+
+              <!-- Score line — flat at 66 across the history.
+                   15 weeks: x from 30 to 670 (640px wide / 14 segments = ~45.7px each)
+                   y for 66: 160 - (66/100 * 160) = 160 - 105.6 = 54.4 -->
+              <path class="history-area"
+                    d="M30,54.4 L75.7,54.4 L121.4,54.4 L167.1,54.4 L212.9,54.4 L258.6,54.4 L304.3,54.4 L350,54.4 L395.7,54.4 L441.4,54.4 L487.1,54.4 L532.9,54.4 L578.6,54.4 L624.3,54.4 L670,54.4 L670,160 L30,160 Z"/>
+              <path class="history-line"
+                    d="M30,54.4 L75.7,54.4 L121.4,54.4 L167.1,54.4 L212.9,54.4 L258.6,54.4 L304.3,54.4 L350,54.4 L395.7,54.4 L441.4,54.4 L487.1,54.4 L532.9,54.4 L578.6,54.4 L624.3,54.4 L670,54.4"/>
+
+              <!-- Score dots at each measurement -->
+              <circle class="history-dot" cx="30" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="75.7" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="121.4" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="167.1" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="212.9" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="258.6" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="304.3" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="350" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="395.7" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="441.4" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="487.1" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="532.9" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="578.6" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="624.3" cy="54.4" r="3.5"/>
+              <circle class="history-dot" cx="670" cy="54.4" r="3.5"/>
+
+              <!-- Annotation 1: ROI 63→90 (week of Mar 1) -->
+              <line class="history-anno-line" x1="167.1" y1="54.4" x2="167.1" y2="14"/>
+              <circle class="history-anno-dot" cx="167.1" cy="14" r="5"/>
+              <text x="172" y="16" font-family="JetBrains Mono, monospace" font-size="9" fill="#0c0c0d" font-weight="600">ROI 63→90</text>
+
+              <!-- Annotation 2: NPS 77→57 (week of Mar 22) -->
+              <line class="history-anno-line" x1="304.3" y1="54.4" x2="304.3" y2="100"/>
+              <circle class="history-anno-dot" cx="304.3" cy="100" r="5"/>
+              <text x="310" y="105" font-family="JetBrains Mono, monospace" font-size="9" fill="#0c0c0d" font-weight="600">NPS 77→57</text>
+
+              <!-- Annotation 3: Engagement Yellow→Red (week of Sep 24 — back-projected) -->
+              <line class="history-anno-line" x1="30" y1="54.4" x2="30" y2="120"/>
+              <circle class="history-anno-dot" cx="30" cy="120" r="5"/>
+              <text x="38" y="125" font-family="JetBrains Mono, monospace" font-size="9" fill="#0c0c0d" font-weight="600">Engagement→Red</text>
+
+              <!-- Annotation 4: Renewal renewed (week of Mar 26) -->
+              <line class="history-anno-line" x1="350" y1="54.4" x2="350" y2="14"/>
+              <circle class="history-anno-dot" cx="350" cy="14" r="5"/>
+              <text x="356" y="16" font-family="JetBrains Mono, monospace" font-size="9" fill="#0c0c0d" font-weight="600">Renewed</text>
+            </svg>
+          </div>
+
+          <div class="history-x-axis">
+            <span>Feb 8</span>
+            <span>Mar 1</span>
+            <span>Mar 22</span>
+            <span>Apr 12</span>
+            <span>Apr 30</span>
+          </div>
+
+          <div class="history-annotations">
+            <div class="anno-item">
+              <span class="anno-when">2 wk ago</span>
+              <span class="anno-text"><strong>Score flat at 66</strong> for the last 15 weeks. Compensating signals: <span class="pos">ROI +27</span> offset by <span class="neg">NPS −20</span>.</span>
+            </div>
+            <div class="anno-item">
+              <span class="anno-when">5 wk ago</span>
+              <span class="anno-text"><strong>Renewed</strong> — Tara Boyette confirmed close. Score didn't move because Engagement and Support remain Red.</span>
+            </div>
+            <div class="anno-item">
+              <span class="anno-when">9 wk ago</span>
+              <span class="anno-text"><strong>NPS dropped 77 → 57</strong> after the support ticket cluster in Feb. Comment: <em>"acceptable but room for improvement."</em></span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =========== CARDS VIEW (default) =========== -->
+      <section class="groups-stack">
+
+        <!-- ============= OUTCOMES HEALTH ============= -->
+        <article class="group-card">
+          <div class="group-head">
+            <div class="group-ring">
+              <svg viewBox="0 0 56 56">
+                <circle class="bg-c" cx="28" cy="28" r="22"/>
+                <!-- 70 / 100 = 70% of 138.23 = 96.76 -->
+                <circle class="fg-c" cx="28" cy="28" r="22" stroke="#d97706"
+                        stroke-dasharray="96.76 138.23"/>
+              </svg>
+              <div class="group-ring-text">70</div>
+            </div>
+            <div class="group-info">
+              <div class="group-name">Outcomes Health</div>
+              <div class="group-meta">
+                <span class="val">Yellow</span>
+                <span class="sep">·</span>
+                <span>weight 36% of overall</span>
+                <span class="sep">·</span>
+                <span class="ok">▲ +9 pts vs prior</span>
+                <span class="sep">·</span>
+                <span>4 measures</span>
+              </div>
+            </div>
+            <div class="group-trend-mini" title="15-week trend">
+              <div style="height:50%; background:var(--amber);"></div>
+              <div style="height:55%; background:var(--amber);"></div>
+              <div style="height:60%; background:var(--amber);"></div>
+              <div style="height:62%; background:var(--amber);"></div>
+              <div style="height:65%; background:var(--amber);"></div>
+              <div style="height:67%; background:var(--amber);"></div>
+              <div style="height:70%; background:var(--green);"></div>
+            </div>
+          </div>
+
+          <div class="group-bar">
+            <div class="group-bar-label">Weighted contribution to group score · drag-shaped by score and weight</div>
+            <div class="stacked-bar">
+              <!-- Each segment width = weight, height-shade = score
+                   Deployment 71 G, Adoption-Depth 71 G, Engagement 48 R, ROI 90 G — each 25% weight -->
+              <div class="stacked-bar-seg green" style="width:25%;" title="Deployment · 71 Green · 25%">71</div>
+              <div class="stacked-bar-seg green" style="width:25%;" title="Adoption-Depth · 71 Green · 25%">71</div>
+              <div class="stacked-bar-seg red" style="width:25%;" title="Engagement · 48 Red · 25%">48</div>
+              <div class="stacked-bar-seg green" style="width:25%;" title="ROI · 90 Green · 25%">90</div>
+            </div>
+            <div class="stacked-bar-key">
+              <span class="item"><span class="swatch green"></span>Deployment 71 · 25%</span>
+              <span class="item"><span class="swatch green"></span>Adoption-Depth 71 · 25%</span>
+              <span class="item"><span class="swatch red"></span>Engagement 48 · 25%</span>
+              <span class="item"><span class="swatch green"></span>ROI 90 · 25%</span>
+            </div>
+          </div>
+
+          <div class="measures">
+
+            <!-- ROI -->
+            <div class="measure is-win" data-measure="roi">
+              <div class="measure-head">
+                <span class="measure-pill green">90 <span class="arrow">▲</span></span>
+                <span class="measure-name">ROI</span>
+                <div class="measure-tags">
+                  <span class="measure-tag win">Top win</span>
+                  <span class="measure-tag weight">25%</span>
+                </div>
+              </div>
+              <div class="measure-comment">
+                Success Plan is active with outcomes in progress — only 1 overdue, manageable at this stage. Allison's leadership endorsed the Hooli ROI presentation.
+                <span class="by">Manual · scored by System Admin · 10 Nov 2025</span>
+              </div>
+              <div class="measure-foot">
+                <span>Was 63 Yellow</span>
+                <span class="sep">·</span>
+                <span style="color:var(--green); font-weight:600;">▲ +27</span>
+                <span class="sep">·</span>
+                <span class="input">Manual</span>
+              </div>
+            </div>
+
+            <!-- Engagement -->
+            <div class="measure is-driver" data-measure="engagement">
+              <div class="measure-head">
+                <span class="measure-pill red">48 <span class="arrow">▼</span></span>
+                <span class="measure-name">Engagement</span>
+                <div class="measure-tags">
+                  <span class="measure-tag driver">Top driver of drag</span>
+                  <span class="measure-tag weight">25%</span>
+                </div>
+              </div>
+              <div class="measure-comment">
+                Adoption Champion not contacted in &gt;30 days. Tara Boyette has gone silent; this is the single most actionable lever to recover the score.
+                <span class="by">Manual · scored by Manoj Eskala · 24 Sep 2025 · 219 days stale</span>
+              </div>
+              <div class="measure-foot">
+                <span>Was 61 Yellow</span>
+                <span class="sep">·</span>
+                <span style="color:var(--red); font-weight:600;">▼ −13</span>
+                <span class="sep">·</span>
+                <span class="input">Manual</span>
+              </div>
+            </div>
+
+            <!-- Deployment -->
+            <div class="measure" data-measure="deployment">
+              <div class="measure-head">
+                <span class="measure-pill green">71 <span class="arrow">▲</span></span>
+                <span class="measure-name">Deployment</span>
+                <div class="measure-tags">
+                  <span class="measure-tag weight">25%</span>
+                </div>
+              </div>
+              <div class="measure-comment">
+                All licenses deployed and enabled. Post-implementation CSAT 8/10 — onboarding closed clean.
+                <span class="by">Manual · scored by System Admin · 10 Nov 2025</span>
+              </div>
+              <div class="measure-foot">
+                <span>Was 59 Yellow</span>
+                <span class="sep">·</span>
+                <span style="color:var(--green); font-weight:600;">▲ +12</span>
+                <span class="sep">·</span>
+                <span class="input">Manual</span>
+              </div>
+            </div>
+
+            <!-- Adoption Depth -->
+            <div class="measure" data-measure="adoption-depth">
+              <div class="measure-head">
+                <span class="measure-pill green">71 <span class="arrow">▼</span></span>
+                <span class="measure-name">Adoption — Depth</span>
+                <div class="measure-tags">
+                  <span class="measure-tag weight">25%</span>
+                </div>
+              </div>
+              <div class="measure-comment">
+                Sticky features used weekly · 8 of 10 licensed features in use by the team. Trending down slightly — worth watching.
+                <span class="by">Manual · scored by System Admin · 10 Nov 2025</span>
+              </div>
+              <div class="measure-foot">
+                <span>Was 74 Green</span>
+                <span class="sep">·</span>
+                <span style="color:var(--red);">▼ −3</span>
+                <span class="sep">·</span>
+                <span class="input">Manual</span>
+              </div>
+            </div>
+
+          </div>
+        </article>
+
+        <!-- ============= EXPERIENCE HEALTH ============= -->
+        <article class="group-card">
+          <div class="group-head">
+            <div class="group-ring">
+              <svg viewBox="0 0 56 56">
+                <circle class="bg-c" cx="28" cy="28" r="22"/>
+                <!-- 63 / 100 = 87.08 of 138.23 -->
+                <circle class="fg-c" cx="28" cy="28" r="22" stroke="#d97706"
+                        stroke-dasharray="87.08 138.23"/>
+              </svg>
+              <div class="group-ring-text">63</div>
+            </div>
+            <div class="group-info">
+              <div class="group-name">Experience Health</div>
+              <div class="group-meta">
+                <span class="val">Yellow</span>
+                <span class="sep">·</span>
+                <span>weight 36% of overall</span>
+                <span class="sep">·</span>
+                <span>flat (was 63)</span>
+                <span class="sep">·</span>
+                <span>4 measures</span>
+              </div>
+            </div>
+            <div class="group-trend-mini">
+              <div style="height:62%; background:var(--amber);"></div>
+              <div style="height:62%; background:var(--amber);"></div>
+              <div style="height:62%; background:var(--amber);"></div>
+              <div style="height:63%; background:var(--amber);"></div>
+              <div style="height:63%; background:var(--amber);"></div>
+              <div style="height:63%; background:var(--amber);"></div>
+              <div style="height:63%; background:var(--amber);"></div>
+            </div>
+          </div>
+
+          <div class="group-bar">
+            <div class="group-bar-label">Weighted contribution to group score</div>
+            <div class="stacked-bar">
+              <div class="stacked-bar-seg amber" style="width:25%;" title="NPS · 57 Yellow · 25%">57</div>
+              <div class="stacked-bar-seg green" style="width:25%;" title="CSM Sentiment · 76 Green · 25%">76</div>
+              <div class="stacked-bar-seg red" style="width:25%;" title="Support Experience · 50 Red · 25%">50</div>
+              <div class="stacked-bar-seg amber" style="width:25%;" title="Staircase AI Sentiment · 67 Yellow · 25%">67</div>
+            </div>
+            <div class="stacked-bar-key">
+              <span class="item"><span class="swatch amber"></span>NPS 57 · 25%</span>
+              <span class="item"><span class="swatch green"></span>CSM Sentiment 76 · 25%</span>
+              <span class="item"><span class="swatch red"></span>Support 50 · 25%</span>
+              <span class="item"><span class="swatch amber"></span>Staircase AI 67 · 25%</span>
+            </div>
+          </div>
+
+          <div class="measures">
+
+            <!-- Support Experience -->
+            <div class="measure is-driver" data-measure="support">
+              <div class="measure-head">
+                <span class="measure-pill red">50 <span class="arrow">→</span></span>
+                <span class="measure-name">Support Experience</span>
+                <div class="measure-tags">
+                  <span class="measure-tag driver">Drag</span>
+                  <span class="measure-tag stale">320d stale</span>
+                  <span class="measure-tag weight">25%</span>
+                </div>
+              </div>
+              <div class="measure-comment">
+                Support CSAT poor · over 10 support tickets open. This measure has not been re-scored since June 2025 — it may have moved.
+                <span class="by">Calculated · last scored by Aria Bennett · 16 Jun 2025</span>
+              </div>
+              <div class="measure-foot">
+                <span>Was 50 Red</span>
+                <span class="sep">·</span>
+                <span class="input">Calculated</span>
+                <span class="sep">·</span>
+                <span style="color: var(--amber); font-weight: 500;">⚠︎ Refresh recommended</span>
+              </div>
+            </div>
+
+            <!-- NPS -->
+            <div class="measure" data-measure="nps">
+              <div class="measure-head">
+                <span class="measure-pill amber">57 <span class="arrow">▼</span></span>
+                <span class="measure-name">Net Promoter Score</span>
+                <div class="measure-tags">
+                  <span class="measure-tag weight">25%</span>
+                </div>
+              </div>
+              <div class="measure-comment">
+                Aggregated NPS at +30 — acceptable but room for improvement in user satisfaction. Sharp drop after Mar support cluster.
+                <span class="by">Manual · scored by System Admin · 10 Nov 2025</span>
+              </div>
+              <div class="measure-foot">
+                <span>Was 77 Green</span>
+                <span class="sep">·</span>
+                <span style="color:var(--red); font-weight:600;">▼ −20</span>
+                <span class="sep">·</span>
+                <span class="input">Manual</span>
+              </div>
+            </div>
+
+            <!-- CSM Sentiment -->
+            <div class="measure is-win" data-measure="csm-sentiment">
+              <div class="measure-head">
+                <span class="measure-pill green">76 <span class="arrow">→</span></span>
+                <span class="measure-name">CSM Sentiment</span>
+                <div class="measure-tags">
+                  <span class="measure-tag win">Strong</span>
+                  <span class="measure-tag weight">25%</span>
+                </div>
+              </div>
+              <div class="measure-comment">
+                Had a call with Allison today. Her leadership loved the presentation regarding the ROI they have received from Hooli in the last year. Her sentiment is that we are looking strong for expansion with their renewal.
+                <span class="by">Manual · scored by System Admin · 10 Nov 2025</span>
+              </div>
+              <div class="measure-foot">
+                <span>Was 76 Green</span>
+                <span class="sep">·</span>
+                <span class="input">Manual</span>
+              </div>
+            </div>
+
+            <!-- Staircase AI Sentiment -->
+            <div class="measure" data-measure="staircase">
+              <div class="measure-head">
+                <span class="measure-pill amber">67 <span class="arrow">→</span></span>
+                <span class="measure-name">Staircase AI Sentiment</span>
+                <div class="measure-tags">
+                  <span class="measure-tag weight">25%</span>
+                </div>
+              </div>
+              <div class="measure-comment">
+                Monitor concerns and take early actions to improve user experience. Slight noise around support tickets surfaced in transcript analysis.
+                <span class="by">Calculated · scored by System Admin · 10 Nov 2025</span>
+              </div>
+              <div class="measure-foot">
+                <span>Was 67 Yellow</span>
+                <span class="sep">·</span>
+                <span class="input">Calculated</span>
+              </div>
+            </div>
+
+          </div>
+        </article>
+
+        <!-- ============= COMMUNITY & EDUCATION ============= -->
+        <article class="group-card">
+          <div class="group-head">
+            <div class="group-ring">
+              <svg viewBox="0 0 56 56">
+                <circle class="bg-c" cx="28" cy="28" r="22"/>
+                <circle class="fg-c" cx="28" cy="28" r="22" stroke="#d97706"
+                        stroke-dasharray="87.08 138.23"/>
+              </svg>
+              <div class="group-ring-text">63</div>
+            </div>
+            <div class="group-info">
+              <div class="group-name">Community & Education</div>
+              <div class="group-meta">
+                <span class="val">Yellow</span>
+                <span class="sep">·</span>
+                <span>weight 28% of overall</span>
+                <span class="sep">·</span>
+                <span class="crit">▼ −4 pts vs prior</span>
+                <span class="sep">·</span>
+                <span>3 measures</span>
+              </div>
+            </div>
+            <div class="group-trend-mini">
+              <div style="height:67%; background:var(--amber);"></div>
+              <div style="height:67%; background:var(--amber);"></div>
+              <div style="height:65%; background:var(--amber);"></div>
+              <div style="height:65%; background:var(--amber);"></div>
+              <div style="height:64%; background:var(--amber);"></div>
+              <div style="height:63%; background:var(--amber);"></div>
+              <div style="height:63%; background:var(--amber);"></div>
+            </div>
+          </div>
+
+          <div class="group-bar">
+            <div class="group-bar-label">Weighted contribution to group score</div>
+            <div class="stacked-bar">
+              <div class="stacked-bar-seg green" style="width:33.3%;" title="Visits · 72 Green · 33%">72</div>
+              <div class="stacked-bar-seg amber" style="width:33.3%;" title="Topics & Replies · 57 Yellow · 33%">57</div>
+              <div class="stacked-bar-seg amber" style="width:33.4%;" title="Learning Path · 61 Yellow · 33%">61</div>
+            </div>
+            <div class="stacked-bar-key">
+              <span class="item"><span class="swatch green"></span>Visits 72 · 33%</span>
+              <span class="item"><span class="swatch amber"></span>Topics & Replies 57 · 33%</span>
+              <span class="item"><span class="swatch amber"></span>Learning Path 61 · 33%</span>
+            </div>
+          </div>
+
+          <div class="measures">
+
+            <!-- Topics and Replies -->
+            <div class="measure is-driver" data-measure="topics">
+              <div class="measure-head">
+                <span class="measure-pill amber">57 <span class="arrow">▼</span></span>
+                <span class="measure-name">Topics & Replies</span>
+                <div class="measure-tags">
+                  <span class="measure-tag driver">Drag</span>
+                  <span class="measure-tag weight">33%</span>
+                </div>
+              </div>
+              <div class="measure-comment">
+                Some participation in topics and replies, but growth is needed to build momentum. This was Green last cycle.
+                <span class="by">Manual · scored by System Admin · 10 Nov 2025</span>
+              </div>
+              <div class="measure-foot">
+                <span>Was 75 Green</span>
+                <span class="sep">·</span>
+                <span style="color:var(--red); font-weight:600;">▼ −18</span>
+                <span class="sep">·</span>
+                <span class="input">Manual</span>
+              </div>
+            </div>
+
+            <!-- Visits -->
+            <div class="measure" data-measure="visits">
+              <div class="measure-head">
+                <span class="measure-pill green">72 <span class="arrow">▼</span></span>
+                <span class="measure-name">Visits</span>
+                <div class="measure-tags">
+                  <span class="measure-tag weight">33%</span>
+                </div>
+              </div>
+              <div class="measure-comment">
+                Consistent visits to resources show high user interest and value. Slight cooling vs prior cycle.
+                <span class="by">Manual · scored by System Admin · 10 Nov 2025</span>
+              </div>
+              <div class="measure-foot">
+                <span>Was 79 Green</span>
+                <span class="sep">·</span>
+                <span style="color:var(--red);">▼ −7</span>
+                <span class="sep">·</span>
+                <span class="input">Manual</span>
+              </div>
+            </div>
+
+            <!-- Learning Path Completion -->
+            <div class="measure is-win" data-measure="learning-path">
+              <div class="measure-head">
+                <span class="measure-pill amber">61 <span class="arrow">▲</span></span>
+                <span class="measure-name">Learning Path Completion</span>
+                <div class="measure-tags">
+                  <span class="measure-tag win">Recovering</span>
+                  <span class="measure-tag weight">33%</span>
+                </div>
+              </div>
+              <div class="measure-comment">
+                Moderate progress. Some users are completing learning paths, but overall completion could be improved. Recovered from Red.
+                <span class="by">Manual · scored by System Admin · 10 Nov 2025</span>
+              </div>
+              <div class="measure-foot">
+                <span>Was 47 Red</span>
+                <span class="sep">·</span>
+                <span style="color:var(--green); font-weight:600;">▲ +14</span>
+                <span class="sep">·</span>
+                <span class="input">Manual</span>
+              </div>
+            </div>
+
+          </div>
+        </article>
+
+      </section>
+
+      <!-- =========== LIST VIEW (alternative) =========== -->
+      <section class="list-view">
+        <table class="measures-table">
+          <thead>
+            <tr>
+              <th style="width: 26%;">Measure</th>
+              <th>Score</th>
+              <th>Trend</th>
+              <th>Weight</th>
+              <th>Comment</th>
+              <th>Last scored</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr class="group-row">
+              <td colspan="2">Outcomes Health · weight 36% · group score 70</td>
+              <td><span style="color:var(--green); font-weight:600;">▲ +9</span></td>
+              <td colspan="3">4 measures · 1 driver of drag</td>
+            </tr>
+            <tr data-measure="roi">
+              <td>ROI</td>
+              <td class="score-cell"><span class="pill green">90 ▲</span></td>
+              <td class="trend-cell" style="color:var(--green); font-weight:600;">+27</td>
+              <td class="weight-cell">25%</td>
+              <td class="comment-cell">Success Plan active · only 1 overdue. Allison endorsed Hooli ROI presentation.</td>
+              <td class="modified-cell">10 Nov 2025<br><span class="stale">172d stale</span></td>
+            </tr>
+            <tr data-measure="engagement">
+              <td>Engagement</td>
+              <td class="score-cell"><span class="pill red">48 ▼</span></td>
+              <td class="trend-cell" style="color:var(--red); font-weight:600;">−13</td>
+              <td class="weight-cell">25%</td>
+              <td class="comment-cell">Adoption Champion not contacted in &gt;30 days · Tara Boyette silent.</td>
+              <td class="modified-cell">24 Sep 2025<br><span class="stale">219d stale</span></td>
+            </tr>
+            <tr data-measure="deployment">
+              <td>Deployment</td>
+              <td class="score-cell"><span class="pill green">71 ▲</span></td>
+              <td class="trend-cell" style="color:var(--green);">+12</td>
+              <td class="weight-cell">25%</td>
+              <td class="comment-cell">All licenses deployed · Post-implementation CSAT 8/10.</td>
+              <td class="modified-cell">10 Nov 2025<br><span class="stale">172d stale</span></td>
+            </tr>
+            <tr data-measure="adoption-depth">
+              <td>Adoption — Depth</td>
+              <td class="score-cell"><span class="pill green">71 ▼</span></td>
+              <td class="trend-cell" style="color:var(--red);">−3</td>
+              <td class="weight-cell">25%</td>
+              <td class="comment-cell">Sticky features used weekly · 8/10 licensed features in use.</td>
+              <td class="modified-cell">10 Nov 2025<br><span class="stale">172d stale</span></td>
+            </tr>
+
+            <tr class="group-row">
+              <td colspan="2">Experience Health · weight 36% · group score 63</td>
+              <td>flat</td>
+              <td colspan="3">4 measures · 1 driver of drag · 1 stale 320d</td>
+            </tr>
+            <tr data-measure="support">
+              <td>Support Experience</td>
+              <td class="score-cell"><span class="pill red">50 →</span></td>
+              <td class="trend-cell" style="color:var(--text-2);">flat</td>
+              <td class="weight-cell">25%</td>
+              <td class="comment-cell">Support CSAT poor · 10+ tickets open. Has not been re-scored since June 2025.</td>
+              <td class="modified-cell">16 Jun 2025<br><span class="stale">320d stale</span></td>
+            </tr>
+            <tr data-measure="nps">
+              <td>Net Promoter Score</td>
+              <td class="score-cell"><span class="pill amber">57 ▼</span></td>
+              <td class="trend-cell" style="color:var(--red); font-weight:600;">−20</td>
+              <td class="weight-cell">25%</td>
+              <td class="comment-cell">Aggregated NPS +30 — acceptable but room for improvement.</td>
+              <td class="modified-cell">10 Nov 2025<br><span class="stale">172d stale</span></td>
+            </tr>
+            <tr data-measure="csm-sentiment">
+              <td>CSM Sentiment</td>
+              <td class="score-cell"><span class="pill green">76 →</span></td>
+              <td class="trend-cell" style="color:var(--text-2);">flat</td>
+              <td class="weight-cell">25%</td>
+              <td class="comment-cell">Allison's leadership loved the ROI presentation · "looking strong for expansion".</td>
+              <td class="modified-cell">10 Nov 2025<br><span class="stale">172d stale</span></td>
+            </tr>
+            <tr data-measure="staircase">
+              <td>Staircase AI Sentiment</td>
+              <td class="score-cell"><span class="pill amber">67 →</span></td>
+              <td class="trend-cell" style="color:var(--text-2);">flat</td>
+              <td class="weight-cell">25%</td>
+              <td class="comment-cell">Monitor concerns · early actions to improve user experience.</td>
+              <td class="modified-cell">10 Nov 2025<br><span class="stale">172d stale</span></td>
+            </tr>
+
+            <tr class="group-row">
+              <td colspan="2">Community & Education · weight 28% · group score 63</td>
+              <td><span style="color:var(--red); font-weight:600;">−4</span></td>
+              <td colspan="3">3 measures · 1 driver of drag</td>
+            </tr>
+            <tr data-measure="topics">
+              <td>Topics & Replies</td>
+              <td class="score-cell"><span class="pill amber">57 ▼</span></td>
+              <td class="trend-cell" style="color:var(--red); font-weight:600;">−18</td>
+              <td class="weight-cell">33%</td>
+              <td class="comment-cell">Some participation but growth needed. Was Green last cycle.</td>
+              <td class="modified-cell">10 Nov 2025<br><span class="stale">172d stale</span></td>
+            </tr>
+            <tr data-measure="visits">
+              <td>Visits</td>
+              <td class="score-cell"><span class="pill green">72 ▼</span></td>
+              <td class="trend-cell" style="color:var(--red);">−7</td>
+              <td class="weight-cell">33%</td>
+              <td class="comment-cell">Consistent visits to resources · slight cooling vs prior cycle.</td>
+              <td class="modified-cell">10 Nov 2025<br><span class="stale">172d stale</span></td>
+            </tr>
+            <tr data-measure="learning-path">
+              <td>Learning Path Completion</td>
+              <td class="score-cell"><span class="pill amber">61 ▲</span></td>
+              <td class="trend-cell" style="color:var(--green); font-weight:600;">+14</td>
+              <td class="weight-cell">33%</td>
+              <td class="comment-cell">Moderate progress · recovered from Red. Continued improvement targeted.</td>
+              <td class="modified-cell">10 Nov 2025<br><span class="stale">172d stale</span></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- ===== DETAIL DRAWER ===== -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div class="drawer-title-wrap">
+      <div class="drawer-title" id="drawerTitle">Engagement</div>
+      <div class="drawer-sub" id="drawerSub">Outcomes Health · 25% weight · Manual</div>
+    </div>
+    <button class="drawer-close" id="drawerClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="drawerBody">
+    <!-- Body filled in by JS based on which measure was clicked. Default: Engagement (the driver). -->
+  </div>
+</aside>
+
+<script>
+  // ===== View toggle (Cards <-> List) =====
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.classList.toggle('view-list', btn.dataset.view === 'list');
+    });
+  });
+
+  // ===== Measure detail drawer =====
+  // Each measure click opens the drawer with that measure's full detail.
+  // Real data from MCP for Slack's scorecard.
+  const MEASURES = {
+    'engagement': {
+      title: 'Engagement',
+      sub: 'Outcomes Health · 25% weight · Manual',
+      score: 48, prev: 61, label: 'Red', prevLabel: 'Yellow',
+      band: '0–50 Red',
+      trend: [61, 60, 58, 55, 52, 50, 48, 48, 48, 48, 48, 48, 48, 48, 48],
+      comment: 'Adoption Champion not contacted in &gt;30 days. Tara Boyette has gone silent — last touch 31 days ago. The relationship is otherwise healthy (CSM sentiment 76, ROI 90), so this is a process gap, not a customer-side problem.',
+      by: 'Manoj Eskala',
+      when: '24 Sep 2025 · 219 days stale',
+      action: 'Re-engage <strong>Tara Boyette</strong> with a weekly working session. Open CTA in Cockpit (May 13 due) covers this. <strong>Refresh score after 2 weekly sessions</strong> to see Yellow.'
+    },
+    'roi': {
+      title: 'ROI',
+      sub: 'Outcomes Health · 25% weight · Manual',
+      score: 90, prev: 63, label: 'Green', prevLabel: 'Yellow',
+      band: '70–100 Green',
+      trend: [63, 65, 68, 72, 75, 80, 85, 88, 90, 90, 90, 90, 90, 90, 90],
+      comment: 'Success Plan is active with outcomes in progress — only 1 overdue, manageable at this stage. Allison endorsed the Hooli ROI presentation; her leadership team gave strong positive feedback.',
+      by: 'System Administrator',
+      when: '10 Nov 2025 · 172 days stale',
+      action: 'Capture this in the renewal close plan as a <strong>quotable proof point</strong>. Use it in QBR slides.'
+    },
+    'support': {
+      title: 'Support Experience',
+      sub: 'Experience Health · 25% weight · Calculated',
+      score: 50, prev: 50, label: 'Red', prevLabel: 'Red',
+      band: '0–50 Red',
+      trend: [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
+      comment: 'Support CSAT poor · over 10 support tickets open. <strong>This measure has not been re-scored since 16 June 2025</strong> — 320 days. The actual current state may differ; many tickets may have been resolved.',
+      by: 'Aria Bennett',
+      when: '16 Jun 2025 · 320 days stale',
+      action: '<strong>Re-score this measure today</strong>. Pull current ticket count from Zendesk and CSAT from the support survey. If the data is genuinely still Red, escalate to Support Lead.'
+    },
+    'nps': {
+      title: 'Net Promoter Score',
+      sub: 'Experience Health · 25% weight · Manual',
+      score: 57, prev: 77, label: 'Yellow', prevLabel: 'Green',
+      band: '50–70 Yellow',
+      trend: [77, 75, 72, 68, 64, 60, 58, 57, 57, 57, 57, 57, 57, 57, 57],
+      comment: 'Aggregated NPS at +30 — acceptable but room for improvement. Sharp drop after the support ticket cluster in March. Promoters dropped from 71% to 58%.',
+      by: 'System Administrator',
+      when: '10 Nov 2025 · 172 days stale',
+      action: 'Run a <strong>follow-up NPS pulse</strong> after the support backlog is cleared. Most likely path back to Green is via the Support Experience measure.'
+    },
+    'csm-sentiment': {
+      title: 'CSM Sentiment',
+      sub: 'Experience Health · 25% weight · Manual',
+      score: 76, prev: 76, label: 'Green', prevLabel: 'Green',
+      band: '70–100 Green',
+      trend: [70, 72, 74, 76, 76, 76, 76, 76, 76, 76, 76, 76, 76, 76, 76],
+      comment: 'Had a call with Allison today. Her leadership loved the presentation regarding the ROI they have received from Hooli in the last year. Her sentiment is that we are <strong>looking strong for expansion</strong> with their renewal.',
+      by: 'System Administrator',
+      when: '10 Nov 2025 · 172 days stale',
+      action: 'Capitalise — <strong>tee up the Cross-Sell CTA</strong> with Cooper Coleman.'
+    },
+    'staircase': {
+      title: 'Staircase AI Sentiment',
+      sub: 'Experience Health · 25% weight · Calculated',
+      score: 67, prev: 67, label: 'Yellow', prevLabel: 'Yellow',
+      band: '50–70 Yellow',
+      trend: [70, 69, 68, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67],
+      comment: 'Monitor concerns and take early actions to improve user experience. Slight noise around support tickets surfaced in Slack channel transcript analysis.',
+      by: 'System Administrator',
+      when: '10 Nov 2025 · 172 days stale',
+      action: 'Cross-reference Staircase with Support Experience refresh — likely correlated.'
+    },
+    'deployment': {
+      title: 'Deployment',
+      sub: 'Outcomes Health · 25% weight · Manual',
+      score: 71, prev: 59, label: 'Green', prevLabel: 'Yellow',
+      band: '70–100 Green',
+      trend: [59, 60, 62, 64, 66, 68, 70, 71, 71, 71, 71, 71, 71, 71, 71],
+      comment: 'All licenses deployed and enabled. Post-implementation CSAT 8/10 — onboarding closed clean.',
+      by: 'System Administrator',
+      when: '10 Nov 2025 · 172 days stale',
+      action: 'Close out the open Onboarding objectives that have stale tasks (Ashutosh).'
+    },
+    'adoption-depth': {
+      title: 'Adoption — Depth',
+      sub: 'Outcomes Health · 25% weight · Manual',
+      score: 71, prev: 74, label: 'Green', prevLabel: 'Green',
+      band: '70–100 Green',
+      trend: [74, 73, 73, 72, 72, 72, 71, 71, 71, 71, 71, 71, 71, 71, 71],
+      comment: 'Sticky features used weekly · 8 of 10 licensed features in use by the team. Slight cooling — worth watching but not yet a concern.',
+      by: 'System Administrator',
+      when: '10 Nov 2025 · 172 days stale',
+      action: 'Promote the 2 unused features in the next QBR. Workflows declining −12% is worth surfacing.'
+    },
+    'visits': {
+      title: 'Visits',
+      sub: 'Community & Education · 33% weight · Manual',
+      score: 72, prev: 79, label: 'Green', prevLabel: 'Green',
+      band: '70–100 Green',
+      trend: [79, 78, 77, 76, 75, 74, 73, 72, 72, 72, 72, 72, 72, 72, 72],
+      comment: 'Consistent visits to resources show high user interest and value. Slight cooling vs prior cycle.',
+      by: 'System Administrator',
+      when: '10 Nov 2025',
+      action: 'Promote new content; reach the lapsed users with a campaign.'
+    },
+    'topics': {
+      title: 'Topics & Replies',
+      sub: 'Community & Education · 33% weight · Manual',
+      score: 57, prev: 75, label: 'Yellow', prevLabel: 'Green',
+      band: '50–70 Yellow',
+      trend: [75, 73, 70, 67, 64, 61, 58, 57, 57, 57, 57, 57, 57, 57, 57],
+      comment: 'Some participation in topics and replies, but growth is needed to build momentum. Was Green last cycle.',
+      by: 'System Administrator',
+      when: '10 Nov 2025',
+      action: 'Identify community advocates and seed 2-3 high-value topics this month.'
+    },
+    'learning-path': {
+      title: 'Learning Path Completion',
+      sub: 'Community & Education · 33% weight · Manual',
+      score: 61, prev: 47, label: 'Yellow', prevLabel: 'Red',
+      band: '50–70 Yellow',
+      trend: [47, 49, 52, 55, 57, 59, 60, 61, 61, 61, 61, 61, 61, 61, 61],
+      comment: 'Moderate progress. Some users are completing learning paths, but overall completion could be improved. Recovered from Red.',
+      by: 'System Administrator',
+      when: '10 Nov 2025',
+      action: 'Continue current course — momentum is positive.'
+    }
+  };
+
+  function openDrawer(key) {
+    const m = MEASURES[key];
+    if (!m) return;
+    document.getElementById('drawerTitle').textContent = m.title;
+    document.getElementById('drawerSub').textContent = m.sub;
+
+    const colorClass = m.label.toLowerCase();
+    // Build the trend line svg
+    const max = 100, min = 0;
+    const w = 416, h = 56;
+    const trend = m.trend;
+    const stepX = w / (trend.length - 1);
+    const points = trend.map((v, i) => {
+      const x = i * stepX;
+      const y = h - ((v - min) / (max - min)) * h;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' L');
+
+    document.getElementById('drawerBody').innerHTML = `
+      <div>
+        <div class="drawer-section-title">Score</div>
+        <div class="drawer-score-display">
+          <div class="drawer-score-num ${colorClass}">${m.score}</div>
+          <div class="drawer-score-meta">
+            <strong>${m.label}</strong> · band ${m.band}<br>
+            Was <strong>${m.prev} ${m.prevLabel}</strong> · ${m.score > m.prev ? '+' : ''}${m.score - m.prev} pts
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="drawer-section-title">15-week trend</div>
+        <div class="drawer-trend-line">
+          <svg viewBox="0 0 416 56" preserveAspectRatio="none" style="width:100%; height:100%;">
+            <line x1="0" y1="${56 - (70/100)*56}" x2="416" y2="${56 - (70/100)*56}" stroke="#e4e4dc" stroke-dasharray="2 2"/>
+            <line x1="0" y1="${56 - (50/100)*56}" x2="416" y2="${56 - (50/100)*56}" stroke="#e4e4dc" stroke-dasharray="2 2"/>
+            <path d="M${points}" fill="none" stroke="${colorClass === 'green' ? '#16a34a' : colorClass === 'amber' ? '#d97706' : '#dc2626'}" stroke-width="2"/>
+            ${trend.map((v, i) => {
+              const x = i * stepX;
+              const y = h - ((v - min) / (max - min)) * h;
+              return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5" fill="#fff" stroke="${colorClass === 'green' ? '#16a34a' : colorClass === 'amber' ? '#d97706' : '#dc2626'}" stroke-width="1.5"/>`;
+            }).join('')}
+          </svg>
+        </div>
+      </div>
+
+      <div>
+        <div class="drawer-section-title">Latest comment</div>
+        <div class="drawer-comments">
+          ${m.comment}
+          <span class="by">${m.by} · ${m.when}</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="drawer-section-title">What would move the needle</div>
+        <div class="drawer-action">
+          <span class="label">Recommended action</span>
+          ${m.action}
+          <div class="actions">
+            <button class="drawer-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg>
+              Open CTA
+            </button>
+            <button class="drawer-btn ghost">Refresh score</button>
+            <button class="drawer-btn ghost">View history</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.classList.add('drawer-open');
+    document.getElementById('drawer').setAttribute('aria-hidden', 'false');
+  }
+  function closeDrawer() {
+    document.body.classList.remove('drawer-open');
+    document.getElementById('drawer').setAttribute('aria-hidden', 'true');
+  }
+
+  document.querySelectorAll('[data-measure]').forEach(el => {
+    el.addEventListener('click', () => openDrawer(el.dataset.measure));
+  });
+  document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+  document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+</script>
+
+</body>
+</html>
